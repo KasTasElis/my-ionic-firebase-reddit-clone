@@ -1,21 +1,23 @@
-import { useState } from 'react';
-import { Message, getMessage } from '../data/messages';
+import { useState } from "react";
+import { Message, getMessage } from "../data/messages";
 import {
   IonBackButton,
   IonButtons,
+  IonChip,
   IonContent,
   IonHeader,
   IonIcon,
   IonItem,
   IonLabel,
+  IonList,
   IonNote,
   IonPage,
   IonToolbar,
   useIonViewWillEnter,
-} from '@ionic/react';
-import { personCircle } from 'ionicons/icons';
-import { useParams } from 'react-router';
-import './ViewMessage.css';
+} from "@ionic/react";
+import { personCircle } from "ionicons/icons";
+import { useParams } from "react-router";
+import "./ViewMessage.css";
 
 function ViewMessage() {
   const [message, setMessage] = useState<Message>();
@@ -31,7 +33,7 @@ function ViewMessage() {
       <IonHeader translucent>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton text="Inbox" defaultHref="/home"></IonBackButton>
+            <IonBackButton text="Posts" defaultHref="/home"></IonBackButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -40,7 +42,11 @@ function ViewMessage() {
         {message ? (
           <>
             <IonItem>
-              <IonIcon aria-hidden="true" icon={personCircle} color="primary"></IonIcon>
+              <IonIcon
+                aria-hidden="true"
+                icon={personCircle}
+                color="primary"
+              ></IonIcon>
               <IonLabel className="ion-text-wrap">
                 <h2>
                   {message.fromName}
@@ -48,9 +54,6 @@ function ViewMessage() {
                     <IonNote>{message.date}</IonNote>
                   </span>
                 </h2>
-                <h3>
-                  To: <IonNote>Me</IonNote>
-                </h3>
               </IonLabel>
             </IonItem>
 
@@ -66,6 +69,18 @@ function ViewMessage() {
                 sunt in culpa qui officia deserunt mollit anim id est laborum.
               </p>
             </div>
+
+            <div className="ion-padding">
+              <IonChip>💬 7 Comments</IonChip>
+              <IonChip>⬆️ 3</IonChip>
+              <IonChip>⬇️ 0</IonChip>
+            </div>
+
+            <IonList>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <IonItem key={i}>Comment</IonItem>
+              ))}
+            </IonList>
           </>
         ) : (
           <div>Message not found</div>
