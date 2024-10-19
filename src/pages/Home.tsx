@@ -148,6 +148,7 @@ const Home: React.FC = () => {
               label="Username"
               labelPlacement="floating"
               placeholder="Enter Username"
+              className="ion-margin-bottom"
               maxlength={26}
               counter={true}
               counterFormatter={(inputLength, maxLength) =>
