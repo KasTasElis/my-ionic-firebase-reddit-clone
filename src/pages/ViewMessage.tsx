@@ -17,6 +17,7 @@ import {
   IonNote,
   IonPage,
   IonRow,
+  IonText,
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
@@ -103,26 +104,48 @@ function ViewMessage() {
               </IonRow>
             </IonGrid>
 
-            <h3 className="ion-padding-horizontal">Comments (3)</h3>
+            <h3 className="ion-padding-horizontal">Comments</h3>
 
             <IonList>
               {[1, 2, 3, 4, 5].map((i) => (
                 <IonItem key={i}>
                   <IonGrid>
                     <IonRow>
-                      <IonCol>Author Name</IonCol>
-                      <IonCol>13m ago</IonCol>
+                      <IonCol>
+                        <IonText>
+                          <h6 style={{ margin: 0 }}>🤖 John Smith</h6>
+                        </IonText>
+                      </IonCol>
+                      <IonCol className="ion-text-end">
+                        <IonNote>13m ago</IonNote>
+                      </IonCol>
+                    </IonRow>
+
+                    <IonRow>
+                      <IonCol>
+                        <IonText>
+                          <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Accusantium non omnis quisquam quia!
+                            Praesentium doloremque sit.
+                          </p>
+                        </IonText>
+                      </IonCol>
+                    </IonRow>
+
+                    <IonRow>
+                      <IonCol>
+                        <IonButton expand="block" color="success" fill="clear">
+                          ⬆️ 3 UpVote
+                        </IonButton>
+                      </IonCol>
+                      <IonCol>
+                        <IonButton expand="block" color="danger" fill="clear">
+                          ⬇️ 0 DownVote
+                        </IonButton>
+                      </IonCol>
                     </IonRow>
                   </IonGrid>
-                  <div>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                    Delectus magni ratione ex magnam dicta veritatis ullam
-                    aperiam?
-                  </div>
-                  <div className="ion-padding">
-                    <IonChip>⬆️ 3</IonChip>
-                    <IonChip>⬇️ 0</IonChip>
-                  </div>
                 </IonItem>
               ))}
             </IonList>
