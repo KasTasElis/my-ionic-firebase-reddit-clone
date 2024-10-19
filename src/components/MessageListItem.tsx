@@ -15,12 +15,12 @@ const MessageListItem: React.FC<MessageListItemProps> = ({ message }) => {
       detail={false}
     >
       <IonLabel className="ion-text-wrap">
-        <h2>
+        <div className="title">
           <h3>🤖 {message.fromName}</h3>
           <span className="date">
             <IonNote>{message.date}</IonNote>
           </span>
-        </h2>
+        </div>
 
         <h2>{message.subject}</h2>
 

@@ -9,6 +9,7 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonInput,
   IonList,
   IonListHeader,
   IonModal,
@@ -30,6 +31,7 @@ const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const createPostModal = useRef<HTMLIonModalElement>(null);
   const signInModal = useRef<HTMLIonModalElement>(null);
+  const profileModal = useRef<HTMLIonModalElement>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
 
   const [present] = useIonToast();
@@ -64,6 +66,17 @@ const Home: React.FC = () => {
       position: "bottom",
       color: "success",
     });
+    profileModal.current?.dismiss();
+  };
+
+  const saveProfileChanges = () => {
+    present({
+      message: "👍 Profile Updated!",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+    profileModal.current?.dismiss();
   };
 
   return (
@@ -73,7 +86,10 @@ const Home: React.FC = () => {
           <IonTitle>🧸 Eli's Reddit</IonTitle>
           <IonButtons slot="end">
             {isSignedIn ? (
-              <IonButton color="primary" onClick={signOut}>
+              <IonButton
+                color="primary"
+                onClick={() => profileModal.current?.present()}
+              >
                 🙋‍♂️ Profile
               </IonButton>
             ) : (
@@ -100,10 +116,54 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonFab slot="fixed" vertical="bottom" horizontal="end">
-          <IonFabButton id="open-create-post-modal" color="success">
+          <IonFabButton
+            onClick={() => createPostModal.current?.present()}
+            color="secondary"
+          >
             <IonIcon icon={add}></IonIcon>
           </IonFabButton>
         </IonFab>
+
+        <IonModal ref={profileModal}>
+          <IonHeader>
+            <IonToolbar>
+              <IonButtons slot="start">
+                <IonButton
+                  color="danger"
+                  onClick={() => profileModal.current?.dismiss()}
+                >
+                  Close
+                </IonButton>
+              </IonButtons>
+              <IonTitle>My Profile</IonTitle>
+              <IonButtons slot="end">
+                <IonButton color="danger" onClick={signOut}>
+                  Sign Out
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <IonInput
+              label="Username"
+              labelPlacement="floating"
+              placeholder="Enter Username"
+              maxlength={26}
+              counter={true}
+              counterFormatter={(inputLength, maxLength) =>
+                `${maxLength - inputLength} characters remaining`
+              }
+            ></IonInput>
+
+            <IonButton
+              expand="block"
+              color="success"
+              onClick={saveProfileChanges}
+            >
+              Save Changes
+            </IonButton>
+          </IonContent>
+        </IonModal>
 
         <IonModal ref={signInModal}>
           <IonHeader>
@@ -127,7 +187,7 @@ const Home: React.FC = () => {
           </IonContent>
         </IonModal>
 
-        <IonModal ref={createPostModal} trigger="open-create-post-modal">
+        <IonModal ref={createPostModal}>
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="start">

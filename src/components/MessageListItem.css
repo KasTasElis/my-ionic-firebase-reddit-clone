@@ -5,7 +5,7 @@
   overflow: hidden;
 }
 
-#message-list-item ion-label h2 {
+#message-list-item ion-label .title {
   font-weight: 600;
   margin: 0;
   margin-bottom: 10px;
