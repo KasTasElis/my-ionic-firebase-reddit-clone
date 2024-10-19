@@ -12,6 +12,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonListHeader,
   IonNote,
   IonPage,
   IonRow,
@@ -104,37 +105,25 @@ function ViewMessage() {
               </IonRow>
             </IonGrid>
 
-            <IonGrid class="ion-padding-vertical">
-              <IonRow className="ion-align-items-center">
-                <IonCol>
-                  <IonText>
-                    <h3 style={{ margin: 0 }}>Comments</h3>
-                  </IonText>
-                </IonCol>
-
-                <IonCol className="ion-text-end">
-                  <IonSelect
-                    aria-label="Fruit"
-                    interface="popover"
-                    placeholder="Sort By..."
-                    justify="end"
-                    color="medium"
-                  >
-                    <IonSelectOption value="apples">
-                      Latest on Top
-                    </IonSelectOption>
-                    <IonSelectOption value="apples">
-                      Oldest on Top
-                    </IonSelectOption>
-                    <IonSelectOption value="oranges">
-                      Most Popular
-                    </IonSelectOption>
-                  </IonSelect>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-
             <IonList>
+              <IonListHeader>
+                <IonSelect
+                  aria-label="Fruit"
+                  interface="popover"
+                  placeholder="Sort By..."
+                  color="medium"
+                >
+                  <IonSelectOption value="apples">
+                    Latest on Top
+                  </IonSelectOption>
+                  <IonSelectOption value="apples">
+                    Oldest on Top
+                  </IonSelectOption>
+                  <IonSelectOption value="oranges">
+                    Most Popular
+                  </IonSelectOption>
+                </IonSelect>
+              </IonListHeader>
               {[1, 2, 3, 4, 5].map((i) => (
                 <IonItem key={i}>
                   <IonGrid>

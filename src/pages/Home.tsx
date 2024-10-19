@@ -7,9 +7,12 @@ import {
   IonContent,
   IonHeader,
   IonList,
+  IonListHeader,
   IonPage,
   IonRefresher,
   IonRefresherContent,
+  IonSelect,
+  IonSelectOption,
   IonTitle,
   IonToolbar,
   useIonViewWillEnter,
@@ -56,6 +59,18 @@ const Home: React.FC = () => {
 
         <div className="container">
           <IonList>
+            <IonListHeader>
+              <IonSelect
+                aria-label="Fruit"
+                interface="popover"
+                placeholder="Sort By..."
+                color="medium"
+              >
+                <IonSelectOption value="apples">Latest on Top</IonSelectOption>
+                <IonSelectOption value="apples">Oldest on Top</IonSelectOption>
+                <IonSelectOption value="oranges">Most Popular</IonSelectOption>
+              </IonSelect>
+            </IonListHeader>
             {messages.map((m) => (
               <MessageListItem key={m.id} message={m} />
             ))}
