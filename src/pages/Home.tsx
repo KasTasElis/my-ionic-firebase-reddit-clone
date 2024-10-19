@@ -25,13 +25,14 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import "./Home.css";
-import { add } from "ionicons/icons";
+import { add, logoGoogle } from "ionicons/icons";
 import { PostForm } from "../components";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const createPostModal = useRef<HTMLIonModalElement>(null);
   const signInModal = useRef<HTMLIonModalElement>(null);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -44,15 +45,30 @@ const Home: React.FC = () => {
     }, 3000);
   };
 
+  const signIn = () => {
+    setIsSignedIn(true);
+    signInModal.current?.dismiss();
+  };
+
+  const signOut = () => {
+    setIsSignedIn(true);
+  };
+
   return (
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Posts</IonTitle>
+          <IonTitle>🧸 Eli's Reddit</IonTitle>
           <IonButtons slot="end">
-            <IonButton color="primary" id="open-sign-in-modal">
-              Sign In
-            </IonButton>
+            {isSignedIn ? (
+              <IonButton color="primary" onClick={signOut}>
+                🙋‍♂️ Profile
+              </IonButton>
+            ) : (
+              <IonButton color="primary" id="open-sign-in-modal">
+                Sign In
+              </IonButton>
+            )}
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -88,7 +104,12 @@ const Home: React.FC = () => {
               <IonTitle>Sign In</IonTitle>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">Sign in form</IonContent>
+          <IonContent className="ion-padding">
+            <IonButton expand="block" color="primary" onClick={signIn}>
+              <IonIcon slot="start" icon={logoGoogle}></IonIcon>
+              Sign in With Google
+            </IonButton>
+          </IonContent>
         </IonModal>
 
         <IonModal ref={createPostModal} trigger="open-create-post-modal">
