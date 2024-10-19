@@ -9,8 +9,6 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
-  IonInput,
-  IonItem,
   IonList,
   IonListHeader,
   IonModal,
@@ -19,9 +17,9 @@ import {
   IonRefresherContent,
   IonSelect,
   IonSelectOption,
-  IonTextarea,
   IonTitle,
   IonToolbar,
+  useIonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import "./Home.css";
@@ -33,6 +31,8 @@ const Home: React.FC = () => {
   const createPostModal = useRef<HTMLIonModalElement>(null);
   const signInModal = useRef<HTMLIonModalElement>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const [present] = useIonToast();
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -47,11 +47,23 @@ const Home: React.FC = () => {
 
   const signIn = () => {
     setIsSignedIn(true);
+    present({
+      message: "👋 Welcome John Doe!",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
     signInModal.current?.dismiss();
   };
 
   const signOut = () => {
-    setIsSignedIn(true);
+    setIsSignedIn(false);
+    present({
+      message: "👋 Bye bye...",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
   };
 
   return (
@@ -65,7 +77,10 @@ const Home: React.FC = () => {
                 🙋‍♂️ Profile
               </IonButton>
             ) : (
-              <IonButton color="primary" id="open-sign-in-modal">
+              <IonButton
+                color="primary"
+                onClick={() => signInModal.current?.present()}
+              >
                 Sign In
               </IonButton>
             )}
@@ -90,7 +105,7 @@ const Home: React.FC = () => {
           </IonFabButton>
         </IonFab>
 
-        <IonModal ref={signInModal} trigger="open-sign-in-modal">
+        <IonModal ref={signInModal}>
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="start">
