@@ -81,19 +81,29 @@ function ViewMessage() {
               </p>
             </div>
 
-            <div className="ion-padding">
-              <IonButton color="success" fill="outline">
-                ⬆️ 3 UpVote
-              </IonButton>
-              <IonButton color="danger" fill="outline">
-                ⬇️ 0 DownVote
-              </IonButton>
-              <IonButton color="primary" fill="outline">
-                💬 Comment
-              </IonButton>
-            </div>
+            <IonGrid>
+              <IonRow>
+                <IonCol>
+                  <IonButton expand="block" color="success" fill="outline">
+                    ⬆️ 3 UpVote
+                  </IonButton>
+                </IonCol>
+                <IonCol>
+                  <IonButton expand="block" color="danger" fill="outline">
+                    ⬇️ 0 DownVote
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonButton expand="block" color="primary" fill="outline">
+                    💬 Comment
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
 
-            <h3 className="ion-padding">Comments (3)</h3>
+            <h3 className="ion-padding-horizontal">Comments (3)</h3>
 
             <IonList>
               {[1, 2, 3, 4, 5].map((i) => (

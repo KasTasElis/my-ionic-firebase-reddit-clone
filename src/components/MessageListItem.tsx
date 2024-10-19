@@ -34,10 +34,10 @@ const MessageListItem: React.FC<MessageListItemProps> = ({ message }) => {
           culpa qui officia deserunt mollit anim id est laborum.
         </p>
 
-        <div>
-          <IonChip>💬 7 Comments</IonChip>
-          <IonChip>⬆️ 3</IonChip>
-          <IonChip>⬇️ 0</IonChip>
+        <div className="ion-padding-top">
+          <IonChip color="primary">💬 7 Comments</IonChip>
+          <IonChip color="success">⬆️ 3</IonChip>
+          <IonChip color="danger">⬇️ 0</IonChip>
         </div>
       </IonLabel>
     </IonItem>
