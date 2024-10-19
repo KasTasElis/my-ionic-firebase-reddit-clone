@@ -28,12 +28,14 @@ import {
 import { personCircle } from "ionicons/icons";
 import { useParams } from "react-router";
 import "./ViewMessage.css";
+import { CommentForm, PostForm } from "../components";
 
 function ViewMessage() {
   const [message, setMessage] = useState<Message>();
   const params = useParams<{ id: string }>();
   const commentModal = useRef<HTMLIonModalElement>(null);
-  const editModal = useRef<HTMLIonModalElement>(null);
+  const editPostModal = useRef<HTMLIonModalElement>(null);
+  const editCommentModal = useRef<HTMLIonModalElement>(null);
 
   useIonViewWillEnter(() => {
     const msg = getMessage(parseInt(params.id, 10));
@@ -49,7 +51,7 @@ function ViewMessage() {
           </IonButtons>
 
           <IonButtons slot="end">
-            <IonButton color="primary" id="open-edit-modal">
+            <IonButton color="primary" id="open-edit-post-modal">
               ✏️ Edit
             </IonButton>
           </IonButtons>
@@ -88,7 +90,30 @@ function ViewMessage() {
               </p>
             </div>
 
-            <IonModal ref={commentModal} trigger="open-comment-modal">
+            <IonModal ref={editCommentModal}>
+              <IonHeader>
+                <IonToolbar>
+                  <IonButtons slot="start">
+                    <IonButton
+                      color="danger"
+                      onClick={() => editCommentModal.current?.dismiss()}
+                    >
+                      Cancel
+                    </IonButton>
+                  </IonButtons>
+                  <IonTitle>Edit Comment</IonTitle>
+                </IonToolbar>
+              </IonHeader>
+              <IonContent className="ion-padding">
+                <CommentForm
+                  onSubmit={() => editCommentModal.current?.dismiss()}
+                  buttonText="Post Changes"
+                  content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+                />
+              </IonContent>
+            </IonModal>
+
+            <IonModal ref={commentModal}>
               <IonHeader>
                 <IonToolbar>
                   <IonButtons slot="start">
@@ -100,46 +125,35 @@ function ViewMessage() {
                     </IonButton>
                   </IonButtons>
                   <IonTitle>Comment</IonTitle>
-                  <IonButtons slot="end">
-                    <IonButton
-                      strong={true}
-                      onClick={() => commentModal.current?.dismiss()}
-                      color="success"
-                    >
-                      Post
-                    </IonButton>
-                  </IonButtons>
                 </IonToolbar>
               </IonHeader>
               <IonContent className="ion-padding">
-                Comment Content...
+                <CommentForm onSubmit={() => commentModal.current?.dismiss()} />
               </IonContent>
             </IonModal>
 
-            <IonModal ref={editModal} trigger="open-edit-modal">
+            <IonModal ref={editPostModal} trigger="open-edit-post-modal">
               <IonHeader>
                 <IonToolbar>
                   <IonButtons slot="start">
                     <IonButton
                       color="danger"
-                      onClick={() => editModal.current?.dismiss()}
+                      onClick={() => editPostModal.current?.dismiss()}
                     >
                       Cancel
                     </IonButton>
                   </IonButtons>
                   <IonTitle>Edit Post</IonTitle>
-                  <IonButtons slot="end">
-                    <IonButton
-                      strong={true}
-                      onClick={() => editModal.current?.dismiss()}
-                      color="success"
-                    >
-                      Save
-                    </IonButton>
-                  </IonButtons>
                 </IonToolbar>
               </IonHeader>
-              <IonContent className="ion-padding">Post Content...</IonContent>
+              <IonContent className="ion-padding">
+                <PostForm
+                  title={message.subject}
+                  content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                  onSubmit={() => editPostModal.current?.dismiss()}
+                  buttonText="Post Changes"
+                />
+              </IonContent>
             </IonModal>
 
             <IonGrid>
@@ -161,7 +175,7 @@ function ViewMessage() {
                     expand="block"
                     color="primary"
                     fill="outline"
-                    id="open-comment-modal"
+                    onClick={() => commentModal.current?.present()}
                   >
                     💬 Comment
                   </IonButton>
@@ -244,6 +258,9 @@ function ViewMessage() {
                               expand="block"
                               color="primary"
                               fill="clear"
+                              onClick={() =>
+                                editCommentModal.current?.present()
+                              }
                             >
                               ✏️ Edit
                             </IonButton>

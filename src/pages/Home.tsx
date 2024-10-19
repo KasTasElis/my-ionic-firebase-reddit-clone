@@ -26,6 +26,7 @@ import {
 } from "@ionic/react";
 import "./Home.css";
 import { add } from "ionicons/icons";
+import { PostForm } from "../components";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -105,39 +106,7 @@ const Home: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent className="ion-padding">
-            <IonInput
-              label="Title"
-              autoFocus
-              labelPlacement="floating"
-              placeholder="Post title..."
-              maxlength={120}
-              counter={true}
-              counterFormatter={(inputLength, maxLength) =>
-                `${maxLength - inputLength} characters remaining`
-              }
-            ></IonInput>
-
-            <IonTextarea
-              className="ion-padding-bottom"
-              label="Content"
-              labelPlacement="stacked"
-              placeholder="Post content..."
-              autoGrow={true}
-              counter={true}
-              maxlength={450}
-              counterFormatter={(inputLength, maxLength) =>
-                `${maxLength - inputLength} characters remaining`
-              }
-            ></IonTextarea>
-
-            <IonButton
-              expand="block"
-              color="success"
-              className="ion-margin-top"
-              onClick={() => createPostModal.current?.dismiss()}
-            >
-              Post
-            </IonButton>
+            <PostForm onSubmit={() => createPostModal.current?.dismiss()} />
           </IonContent>
         </IonModal>
 
