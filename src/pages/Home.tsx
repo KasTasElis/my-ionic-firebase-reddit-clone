@@ -9,6 +9,8 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonInput,
+  IonItem,
   IonList,
   IonListHeader,
   IonModal,
@@ -17,12 +19,13 @@ import {
   IonRefresherContent,
   IonSelect,
   IonSelectOption,
+  IonTextarea,
   IonTitle,
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
 import "./Home.css";
-import { add, addCircleOutline } from "ionicons/icons";
+import { add } from "ionicons/icons";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -66,7 +69,7 @@ const Home: React.FC = () => {
 
         <IonFab slot="fixed" vertical="bottom" horizontal="end">
           <IonFabButton id="open-create-post-modal" color="success">
-            <IonIcon icon={addCircleOutline}></IonIcon>
+            <IonIcon icon={add}></IonIcon>
           </IonFabButton>
         </IonFab>
 
@@ -99,18 +102,43 @@ const Home: React.FC = () => {
                 </IonButton>
               </IonButtons>
               <IonTitle>Create Post</IonTitle>
-              <IonButtons slot="end">
-                <IonButton
-                  strong={true}
-                  onClick={() => createPostModal.current?.dismiss()}
-                  color="success"
-                >
-                  Post
-                </IonButton>
-              </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">Post Content...</IonContent>
+          <IonContent className="ion-padding">
+            <IonInput
+              label="Title"
+              autoFocus
+              labelPlacement="floating"
+              placeholder="Post title..."
+              maxlength={120}
+              counter={true}
+              counterFormatter={(inputLength, maxLength) =>
+                `${maxLength - inputLength} characters remaining`
+              }
+            ></IonInput>
+
+            <IonTextarea
+              className="ion-padding-bottom"
+              label="Content"
+              labelPlacement="stacked"
+              placeholder="Post content..."
+              autoGrow={true}
+              counter={true}
+              maxlength={450}
+              counterFormatter={(inputLength, maxLength) =>
+                `${maxLength - inputLength} characters remaining`
+              }
+            ></IonTextarea>
+
+            <IonButton
+              expand="block"
+              color="success"
+              className="ion-margin-top"
+              onClick={() => createPostModal.current?.dismiss()}
+            >
+              Post
+            </IonButton>
+          </IonContent>
         </IonModal>
 
         <div className="container">
