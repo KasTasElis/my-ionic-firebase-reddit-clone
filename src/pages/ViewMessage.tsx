@@ -15,6 +15,8 @@ import {
   IonNote,
   IonPage,
   IonRow,
+  IonSelect,
+  IonSelectOption,
   IonText,
   IonToolbar,
   useIonViewWillEnter,
@@ -103,7 +105,7 @@ function ViewMessage() {
             </IonGrid>
 
             <IonGrid class="ion-padding-vertical">
-              <IonRow>
+              <IonRow className="ion-align-items-center">
                 <IonCol>
                   <IonText>
                     <h3 style={{ margin: 0 }}>Comments</h3>
@@ -111,7 +113,23 @@ function ViewMessage() {
                 </IonCol>
 
                 <IonCol className="ion-text-end">
-                  <IonNote>Sort By..</IonNote>
+                  <IonSelect
+                    aria-label="Fruit"
+                    interface="popover"
+                    placeholder="Sort By..."
+                    justify="end"
+                    color="medium"
+                  >
+                    <IonSelectOption value="apples">
+                      Latest on Top
+                    </IonSelectOption>
+                    <IonSelectOption value="apples">
+                      Oldest on Top
+                    </IonSelectOption>
+                    <IonSelectOption value="oranges">
+                      Most Popular
+                    </IonSelectOption>
+                  </IonSelect>
                 </IonCol>
               </IonRow>
             </IonGrid>
