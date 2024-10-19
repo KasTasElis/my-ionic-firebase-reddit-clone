@@ -33,8 +33,6 @@ import "@ionic/react/css/palettes/dark.system.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import CreatePost from "./pages/CreatePost";
-import EditPost from "./pages/EditPost";
 
 setupIonicReact();
 
@@ -48,15 +46,8 @@ const App: React.FC = () => (
         <Route path="/home" exact={true}>
           <Home />
         </Route>
-        <Route path="/create-post" exact={true}>
-          <CreatePost />
-        </Route>
         <Route path="/message/:id">
           <ViewMessage />
-        </Route>
-
-        <Route path="/message/:id/edit">
-          <EditPost />
         </Route>
       </IonRouterOutlet>
     </IonReactRouter>

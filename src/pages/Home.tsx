@@ -1,5 +1,5 @@
 import MessageListItem from "../components/MessageListItem";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Message, getMessages } from "../data/messages";
 import {
   IonButton,
@@ -8,6 +8,7 @@ import {
   IonHeader,
   IonList,
   IonListHeader,
+  IonModal,
   IonPage,
   IonRefresher,
   IonRefresherContent,
@@ -21,6 +22,7 @@ import "./Home.css";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const createPostModal = useRef<HTMLIonModalElement>(null);
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -39,7 +41,7 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonTitle>Posts</IonTitle>
           <IonButtons slot="end">
-            <IonButton color="success" routerLink="/create-post">
+            <IonButton color="success" id="open-create-post-modal">
               Create Post
             </IonButton>
           </IonButtons>
@@ -56,6 +58,32 @@ const Home: React.FC = () => {
             <IonTitle size="large">Posts</IonTitle>
           </IonToolbar>
         </IonHeader>
+
+        <IonModal ref={createPostModal} trigger="open-create-post-modal">
+          <IonHeader>
+            <IonToolbar>
+              <IonButtons slot="start">
+                <IonButton
+                  color="danger"
+                  onClick={() => createPostModal.current?.dismiss()}
+                >
+                  Cancel
+                </IonButton>
+              </IonButtons>
+              <IonTitle>Create Post</IonTitle>
+              <IonButtons slot="end">
+                <IonButton
+                  strong={true}
+                  onClick={() => createPostModal.current?.dismiss()}
+                  color="success"
+                >
+                  Post
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">Post Content...</IonContent>
+        </IonModal>
 
         <div className="container">
           <IonList>
