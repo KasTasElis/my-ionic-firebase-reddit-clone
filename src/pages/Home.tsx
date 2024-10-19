@@ -5,7 +5,10 @@ import {
   IonButton,
   IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonHeader,
+  IonIcon,
   IonList,
   IonListHeader,
   IonModal,
@@ -19,6 +22,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import "./Home.css";
+import { add, addCircleOutline } from "ionicons/icons";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -59,6 +63,12 @@ const Home: React.FC = () => {
             <IonTitle size="large">Posts</IonTitle>
           </IonToolbar>
         </IonHeader>
+
+        <IonFab slot="fixed" vertical="bottom" horizontal="end">
+          <IonFabButton id="open-create-post-modal" color="success">
+            <IonIcon icon={addCircleOutline}></IonIcon>
+          </IonFabButton>
+        </IonFab>
 
         <IonModal ref={signInModal} trigger="open-sign-in-modal">
           <IonHeader>
