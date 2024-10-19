@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Message, getMessage } from "../data/messages";
 import {
   IonBackButton,
+  IonBadge,
   IonButton,
   IonButtons,
   IonChip,
+  IonCol,
   IonContent,
+  IonGrid,
   IonHeader,
   IonIcon,
   IonItem,
@@ -13,6 +16,7 @@ import {
   IonList,
   IonNote,
   IonPage,
+  IonRow,
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
@@ -38,7 +42,9 @@ function ViewMessage() {
           </IonButtons>
 
           <IonButtons slot="end">
-            <IonButton routerLink="/message/:id/edit">Edit</IonButton>
+            <IonButton color="primary" routerLink="/message/:id/edit">
+              Edit
+            </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -76,14 +82,38 @@ function ViewMessage() {
             </div>
 
             <div className="ion-padding">
-              <IonChip>💬 7 Comments</IonChip>
-              <IonChip>⬆️ 3</IonChip>
-              <IonChip>⬇️ 0</IonChip>
+              <IonButton color="success" fill="outline">
+                ⬆️ 3 UpVote
+              </IonButton>
+              <IonButton color="danger" fill="outline">
+                ⬇️ 0 DownVote
+              </IonButton>
+              <IonButton color="primary" fill="outline">
+                💬 Comment
+              </IonButton>
             </div>
+
+            <h3 className="ion-padding">Comments (3)</h3>
 
             <IonList>
               {[1, 2, 3, 4, 5].map((i) => (
-                <IonItem key={i}>Comment</IonItem>
+                <IonItem key={i}>
+                  <IonGrid>
+                    <IonRow>
+                      <IonCol>Author Name</IonCol>
+                      <IonCol>13m ago</IonCol>
+                    </IonRow>
+                  </IonGrid>
+                  <div>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                    Delectus magni ratione ex magnam dicta veritatis ullam
+                    aperiam?
+                  </div>
+                  <div className="ion-padding">
+                    <IonChip>⬆️ 3</IonChip>
+                    <IonChip>⬇️ 0</IonChip>
+                  </div>
+                </IonItem>
               ))}
             </IonList>
           </>
