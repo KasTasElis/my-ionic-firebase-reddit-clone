@@ -23,6 +23,7 @@ import "./Home.css";
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const createPostModal = useRef<HTMLIonModalElement>(null);
+  const signInModal = useRef<HTMLIonModalElement>(null);
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -41,8 +42,8 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonTitle>Posts</IonTitle>
           <IonButtons slot="end">
-            <IonButton color="success" id="open-create-post-modal">
-              Create Post
+            <IonButton color="primary" id="open-sign-in-modal">
+              Sign In
             </IonButton>
           </IonButtons>
         </IonToolbar>
@@ -58,6 +59,23 @@ const Home: React.FC = () => {
             <IonTitle size="large">Posts</IonTitle>
           </IonToolbar>
         </IonHeader>
+
+        <IonModal ref={signInModal} trigger="open-sign-in-modal">
+          <IonHeader>
+            <IonToolbar>
+              <IonButtons slot="start">
+                <IonButton
+                  color="danger"
+                  onClick={() => signInModal.current?.dismiss()}
+                >
+                  Cancel
+                </IonButton>
+              </IonButtons>
+              <IonTitle>Sign In</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">Sign in form</IonContent>
+        </IonModal>
 
         <IonModal ref={createPostModal} trigger="open-create-post-modal">
           <IonHeader>
