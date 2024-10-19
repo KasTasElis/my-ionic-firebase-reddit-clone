@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Message, getMessage } from "../data/messages";
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonChip,
   IonContent,
@@ -34,6 +35,10 @@ function ViewMessage() {
         <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton text="Posts" defaultHref="/home"></IonBackButton>
+          </IonButtons>
+
+          <IonButtons slot="end">
+            <IonButton routerLink="/message/:id/edit">Edit</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>

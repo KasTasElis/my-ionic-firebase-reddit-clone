@@ -36,7 +36,9 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonTitle>Posts</IonTitle>
           <IonButtons slot="end">
-            <IonButton color="success">Create Post</IonButton>
+            <IonButton color="success" routerLink="/create-post">
+              Create Post
+            </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
