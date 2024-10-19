@@ -2,10 +2,8 @@ import { useState } from "react";
 import { Message, getMessage } from "../data/messages";
 import {
   IonBackButton,
-  IonBadge,
   IonButton,
   IonButtons,
-  IonChip,
   IonCol,
   IonContent,
   IonGrid,
@@ -44,7 +42,7 @@ function ViewMessage() {
 
           <IonButtons slot="end">
             <IonButton color="primary" routerLink="/message/:id/edit">
-              Edit
+              ✏️ Edit
             </IonButton>
           </IonButtons>
         </IonToolbar>
@@ -104,7 +102,19 @@ function ViewMessage() {
               </IonRow>
             </IonGrid>
 
-            <h3 className="ion-padding-horizontal">Comments</h3>
+            <IonGrid class="ion-padding-vertical">
+              <IonRow>
+                <IonCol>
+                  <IonText>
+                    <h3 style={{ margin: 0 }}>Comments</h3>
+                  </IonText>
+                </IonCol>
+
+                <IonCol className="ion-text-end">
+                  <IonNote>Sort By..</IonNote>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
 
             <IonList>
               {[1, 2, 3, 4, 5].map((i) => (
@@ -124,7 +134,7 @@ function ViewMessage() {
                     <IonRow>
                       <IonCol>
                         <IonText>
-                          <p>
+                          <p style={{ margin: 0 }}>
                             Lorem ipsum dolor sit amet consectetur adipisicing
                             elit. Accusantium non omnis quisquam quia!
                             Praesentium doloremque sit.
@@ -134,16 +144,50 @@ function ViewMessage() {
                     </IonRow>
 
                     <IonRow>
-                      <IonCol>
-                        <IonButton expand="block" color="success" fill="clear">
-                          ⬆️ 3 UpVote
-                        </IonButton>
-                      </IonCol>
-                      <IonCol>
-                        <IonButton expand="block" color="danger" fill="clear">
-                          ⬇️ 0 DownVote
-                        </IonButton>
-                      </IonCol>
+                      {/* Edit My Comment */}
+                      {i !== 2 ? (
+                        <>
+                          <IonCol>
+                            <IonButton
+                              expand="block"
+                              color="success"
+                              fill="clear"
+                            >
+                              ⬆️ 3 UpVote
+                            </IonButton>
+                          </IonCol>
+                          <IonCol>
+                            <IonButton
+                              expand="block"
+                              color="danger"
+                              fill="clear"
+                            >
+                              ⬇️ 0 DownVote
+                            </IonButton>
+                          </IonCol>
+                        </>
+                      ) : (
+                        <>
+                          <IonCol>
+                            <IonButton
+                              expand="block"
+                              color="primary"
+                              fill="clear"
+                            >
+                              ✏️ Edit
+                            </IonButton>
+                          </IonCol>
+                          <IonCol>
+                            <IonButton
+                              expand="block"
+                              color="danger"
+                              fill="clear"
+                            >
+                              🗑️ Delete
+                            </IonButton>
+                          </IonCol>
+                        </>
+                      )}
                     </IonRow>
                   </IonGrid>
                 </IonItem>
