@@ -1,5 +1,5 @@
 import MessageListItem from "../components/MessageListItem";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Message, getMessages } from "../data/messages";
 import {
   IonButton,
@@ -10,7 +10,6 @@ import {
   IonHeader,
   IonIcon,
   IonInput,
-  IonItem,
   IonList,
   IonListHeader,
   IonModal,
@@ -29,6 +28,8 @@ import "./Home.css";
 import { add, logoGoogle } from "ionicons/icons";
 import { PostForm } from "../components";
 import { SignInForm } from "../components/SignInForm";
+import { auth } from "../main";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,6 +39,17 @@ const Home: React.FC = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
 
   const [present] = useIonToast();
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsSignedIn(true);
+        console.log("User is signed in: ", user);
+      } else {
+        setIsSignedIn(false);
+      }
+    });
+  }, []);
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -50,26 +62,17 @@ const Home: React.FC = () => {
     }, 3000);
   };
 
-  const signIn = () => {
-    setIsSignedIn(true);
-    present({
-      message: "👋 Welcome John Doe!",
-      duration: 1500,
-      position: "bottom",
-      color: "success",
-    });
-    signInModal.current?.dismiss();
-  };
+  const signOut = async () => {
+    profileModal.current?.dismiss();
 
-  const signOut = () => {
-    setIsSignedIn(false);
+    await auth.signOut();
+
     present({
       message: "👋 Bye bye...",
       duration: 1500,
       position: "bottom",
       color: "success",
     });
-    profileModal.current?.dismiss();
   };
 
   const saveProfileChanges = () => {
@@ -191,12 +194,7 @@ const Home: React.FC = () => {
               <h4 className="ion-text-center ion-margin">OR</h4>
             </IonText>
 
-            <IonButton
-              expand="block"
-              color="primary"
-              fill="outline"
-              onClick={signIn}
-            >
+            <IonButton expand="block" color="primary" fill="outline">
               <IonIcon slot="start" icon={logoGoogle}></IonIcon>
               Sign in With Google
             </IonButton>
