@@ -28,6 +28,7 @@ import {
 import "./Home.css";
 import { add, logoGoogle } from "ionicons/icons";
 import { PostForm } from "../components";
+import { SignInForm } from "../components/SignInForm";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -184,27 +185,7 @@ const Home: React.FC = () => {
           </IonHeader>
 
           <IonContent className="ion-padding">
-            <form action="" className="ion-margin-bottom">
-              <IonInput
-                label="Email"
-                labelPlacement="floating"
-                type="email"
-                placeholder="Email"
-                className="ion-margin-bottom"
-              ></IonInput>
-
-              <IonInput
-                label="Password"
-                labelPlacement="floating"
-                type="password"
-                placeholder="Password"
-                className="ion-margin-bottom"
-              ></IonInput>
-
-              <IonButton expand="block" color="primary" onClick={signIn}>
-                Sign In
-              </IonButton>
-            </form>
+            <SignInForm />
 
             <IonText>
               <h4 className="ion-text-center ion-margin">OR</h4>
