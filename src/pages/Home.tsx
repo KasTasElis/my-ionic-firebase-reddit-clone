@@ -9,7 +9,6 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
-  IonInput,
   IonList,
   IonListHeader,
   IonModal,
@@ -29,24 +28,25 @@ import { add, logoGoogle } from "ionicons/icons";
 import { PostForm } from "../components";
 import { SignInForm } from "../components/SignInForm";
 import { auth } from "../main";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { ProfileForm } from "../components/ProfileForm";
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const createPostModal = useRef<HTMLIonModalElement>(null);
   const signInModal = useRef<HTMLIonModalElement>(null);
   const profileModal = useRef<HTMLIonModalElement>(null);
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const [present] = useIonToast();
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsSignedIn(true);
+        setUser(user);
         console.log("User is signed in: ", user);
       } else {
-        setIsSignedIn(false);
+        setUser(null);
       }
     });
   }, []);
@@ -85,13 +85,17 @@ const Home: React.FC = () => {
     profileModal.current?.dismiss();
   };
 
+  const getUserEmail = () => {
+    return user?.email || "what...?";
+  };
+
   return (
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
           <IonTitle>🧸 Eli's Reddit</IonTitle>
           <IonButtons slot="end">
-            {isSignedIn ? (
+            {user ? (
               <IonButton
                 color="primary"
                 onClick={() => profileModal.current?.present()}
@@ -150,25 +154,7 @@ const Home: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent className="ion-padding">
-            <IonInput
-              label="Username"
-              labelPlacement="floating"
-              placeholder="Enter Username"
-              className="ion-margin-bottom"
-              maxlength={26}
-              counter={true}
-              counterFormatter={(inputLength, maxLength) =>
-                `${maxLength - inputLength} characters remaining`
-              }
-            ></IonInput>
-
-            <IonButton
-              expand="block"
-              color="success"
-              onClick={saveProfileChanges}
-            >
-              Save Changes
-            </IonButton>
+            <ProfileForm username={getUserEmail()} onSubmit={() => {}} />
           </IonContent>
         </IonModal>
 
