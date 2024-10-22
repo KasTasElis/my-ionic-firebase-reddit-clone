@@ -51,6 +51,23 @@ const Home: React.FC = () => {
     });
   }, []);
 
+  const openCreatePostModal = () => {
+    if (!user) {
+      present({
+        message: "🤔 Please sign in to post.",
+        duration: 1500,
+        position: "bottom",
+        color: "warning",
+      });
+
+      signInModal.current?.present();
+
+      return;
+    }
+
+    createPostModal.current?.present();
+  };
+
   useIonViewWillEnter(() => {
     const msgs = getMessages();
     setMessages(msgs);
@@ -126,10 +143,7 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonFab slot="fixed" vertical="bottom" horizontal="end">
-          <IonFabButton
-            onClick={() => createPostModal.current?.present()}
-            color="secondary"
-          >
+          <IonFabButton onClick={openCreatePostModal} color="secondary">
             <IonIcon icon={add}></IonIcon>
           </IonFabButton>
         </IonFab>
