@@ -10,6 +10,7 @@ import {
   IonHeader,
   IonIcon,
   IonInput,
+  IonItem,
   IonList,
   IonListHeader,
   IonModal,
@@ -18,6 +19,7 @@ import {
   IonRefresherContent,
   IonSelect,
   IonSelectOption,
+  IonText,
   IonTitle,
   IonToolbar,
   useIonToast,
@@ -180,8 +182,40 @@ const Home: React.FC = () => {
               <IonTitle>Sign In</IonTitle>
             </IonToolbar>
           </IonHeader>
+
           <IonContent className="ion-padding">
-            <IonButton expand="block" color="primary" onClick={signIn}>
+            <form action="" className="ion-margin-bottom">
+              <IonInput
+                label="Email"
+                labelPlacement="floating"
+                type="email"
+                placeholder="Email"
+                className="ion-margin-bottom"
+              ></IonInput>
+
+              <IonInput
+                label="Password"
+                labelPlacement="floating"
+                type="password"
+                placeholder="Password"
+                className="ion-margin-bottom"
+              ></IonInput>
+
+              <IonButton expand="block" color="primary" onClick={signIn}>
+                Sign In
+              </IonButton>
+            </form>
+
+            <IonText>
+              <h4 className="ion-text-center ion-margin">OR</h4>
+            </IonText>
+
+            <IonButton
+              expand="block"
+              color="primary"
+              fill="outline"
+              onClick={signIn}
+            >
               <IonIcon slot="start" icon={logoGoogle}></IonIcon>
               Sign in With Google
             </IonButton>
