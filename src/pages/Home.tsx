@@ -185,7 +185,7 @@ const Home: React.FC = () => {
           </IonHeader>
 
           <IonContent className="ion-padding">
-            <SignInForm />
+            <SignInForm onSuccess={() => signInModal.current?.dismiss()} />
 
             <IonText>
               <h4 className="ion-text-center ion-margin">OR</h4>
