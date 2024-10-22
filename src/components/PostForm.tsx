@@ -1,7 +1,8 @@
 import { IonInput, IonTextarea, IonButton } from "@ionic/react";
+import { useState } from "react";
 
 type PostFormProps = {
-  onSubmit: () => void;
+  onSubmit: ({ title, content }: { title: string; content: string }) => void;
   buttonText?: string;
   title?: string;
   content?: string;
@@ -10,11 +11,19 @@ type PostFormProps = {
 const PostForm = ({
   onSubmit,
   buttonText = "Post",
-  title,
-  content,
+  title: initialTitle = "",
+  content: initialContent = "",
 }: PostFormProps) => {
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
+
   return (
-    <>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit({ title, content });
+      }}
+    >
       <IonInput
         label="Title"
         autofocus
@@ -26,6 +35,7 @@ const PostForm = ({
         counterFormatter={(inputLength, maxLength) =>
           `${maxLength - inputLength} characters remaining`
         }
+        onIonChange={(e) => setTitle(String(e.detail.value))}
       ></IonInput>
 
       <IonTextarea
@@ -40,17 +50,18 @@ const PostForm = ({
           `${maxLength - inputLength} characters remaining`
         }
         value={content}
+        onIonChange={(e) => setContent(String(e.detail.value))}
       ></IonTextarea>
 
       <IonButton
         expand="block"
         color="success"
         className="ion-margin-top"
-        onClick={onSubmit}
+        type="submit"
       >
         {buttonText}
       </IonButton>
-    </>
+    </form>
   );
 };
 

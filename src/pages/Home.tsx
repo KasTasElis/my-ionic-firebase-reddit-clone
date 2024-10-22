@@ -216,7 +216,18 @@ const Home: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent className="ion-padding">
-            <PostForm onSubmit={() => createPostModal.current?.dismiss()} />
+            <PostForm
+              onSubmit={({ title, content }) => {
+                createPostModal.current?.dismiss();
+                console.log("Post submitted: ", title, content);
+                present({
+                  message: "🎉 Post Created!",
+                  duration: 1500,
+                  position: "bottom",
+                  color: "success",
+                });
+              }}
+            />
           </IonContent>
         </IonModal>
 
