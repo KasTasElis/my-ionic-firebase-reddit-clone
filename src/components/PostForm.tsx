@@ -1,5 +1,7 @@
-import { IonInput, IonTextarea, IonButton } from "@ionic/react";
+import { IonInput, IonTextarea, IonButton, useIonToast } from "@ionic/react";
 import { useState } from "react";
+import { serverTimestamp, addDoc, collection } from "firebase/firestore";
+import { db, auth } from "../main";
 
 type PostFormProps = {
   onSubmit: ({ title, content }: { title: string; content: string }) => void;
@@ -16,12 +18,50 @@ const PostForm = ({
 }: PostFormProps) => {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
+  const [loading, setLoading] = useState(false);
+
+  const reset = () => {
+    setTitle("");
+    setContent("");
+    setLoading(false);
+  };
+
+  const [present] = useIonToast();
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        onSubmit({ title, content });
+
+        try {
+          await addDoc(collection(db, "posts"), {
+            title,
+            content,
+            userId: auth.currentUser?.uid,
+            userName: auth.currentUser?.email,
+            upVotes: 0,
+            downVotes: 0,
+            commentCount: 0,
+            createdAt: serverTimestamp(),
+          });
+          present({
+            message: "Post added successfully",
+            duration: 1500,
+            position: "bottom",
+            color: "success",
+          });
+          onSubmit({ title, content });
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          present({
+            message: "Error adding document",
+            duration: 1500,
+            position: "bottom",
+            color: "danger",
+          });
+        } finally {
+          reset();
+        }
       }}
     >
       <IonInput
@@ -58,8 +98,9 @@ const PostForm = ({
         color="success"
         className="ion-margin-top"
         type="submit"
+        disabled={loading}
       >
-        {buttonText}
+        {loading ? "Loading..." : buttonText}
       </IonButton>
     </form>
   );
