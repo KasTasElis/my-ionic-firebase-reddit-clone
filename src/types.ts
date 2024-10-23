@@ -7,6 +7,7 @@ export type TPost = {
   content: string;
   userName: string;
   createdAt: Timestamp;
+  updatedAt?: Timestamp;
   upVotes: number;
   downVotes: number;
   commentCount: number;

@@ -21,6 +21,7 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  useIonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { personCircle } from "ionicons/icons";
@@ -28,16 +29,11 @@ import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
 import { TPost } from "../types";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../main";
 import { readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
+import { updatePost } from "../entities";
 
 export const ViewPost = () => {
   const params = useParams<{ id: string }>();
@@ -46,6 +42,28 @@ export const ViewPost = () => {
   const editCommentModal = useRef<HTMLIonModalElement>(null);
   const [post, setPost] = useState<TPost | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  const [present] = useIonToast();
+
+  const onSubmitEditPost = async ({
+    title,
+    content,
+  }: Pick<TPost, "title" | "content">) => {
+    try {
+      await updatePost(params.id, { title, content });
+      present({
+        message: "Post updated successfully",
+        duration: 1500,
+        color: "success",
+      });
+    } catch (error) {
+      present({
+        message: "Failed to update post",
+        duration: 1500,
+        color: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
@@ -80,7 +98,10 @@ export const ViewPost = () => {
 
           {user?.uid === post?.userId && (
             <IonButtons slot="end">
-              <IonButton color="primary" id="open-edit-post-modal">
+              <IonButton
+                color="primary"
+                onClick={() => editPostModal.current?.present()}
+              >
                 ✏️ Edit
               </IonButton>
             </IonButtons>
@@ -101,7 +122,9 @@ export const ViewPost = () => {
                 <h2>
                   {post.userName}
                   <span className="date">
-                    <IonNote>{readableDate(post.createdAt)}</IonNote>
+                    <IonNote>
+                      {readableDate(post.updatedAt || post.createdAt)}
+                    </IonNote>
                   </span>
                 </h2>
               </IonLabel>
@@ -154,7 +177,7 @@ export const ViewPost = () => {
               </IonContent>
             </IonModal>
 
-            <IonModal ref={editPostModal} trigger="open-edit-post-modal">
+            <IonModal ref={editPostModal}>
               <IonHeader>
                 <IonToolbar>
                   <IonButtons slot="start">
@@ -172,7 +195,7 @@ export const ViewPost = () => {
                 <PostForm
                   title={post.title}
                   content={post.content}
-                  onSubmit={() => editPostModal.current?.dismiss()}
+                  onSubmit={onSubmitEditPost}
                   buttonText="Post Changes"
                 />
               </IonContent>
