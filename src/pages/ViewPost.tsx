@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IonBackButton,
   IonButton,
@@ -29,8 +29,9 @@ import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
 import { TPost } from "../types";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../main";
+import { auth, db } from "../main";
 import { readableDate } from "../utils";
+import { onAuthStateChanged, User } from "@firebase/auth";
 
 export const ViewPost = () => {
   const params = useParams<{ id: string }>();
@@ -38,8 +39,18 @@ export const ViewPost = () => {
   const editPostModal = useRef<HTMLIonModalElement>(null);
   const editCommentModal = useRef<HTMLIonModalElement>(null);
   const [post, setPost] = useState<TPost | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  console.log("params", params);
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        console.log("User is signed in: ", user);
+      } else {
+        setUser(null);
+      }
+    });
+  }, []);
 
   useIonViewWillEnter(() => {
     const docRef = doc(db, "posts", params.id);
@@ -61,11 +72,13 @@ export const ViewPost = () => {
             <IonBackButton text="Posts" defaultHref="/home"></IonBackButton>
           </IonButtons>
 
-          <IonButtons slot="end">
-            <IonButton color="primary" id="open-edit-post-modal">
-              ✏️ Edit
-            </IonButton>
-          </IonButtons>
+          {user?.uid === post?.userId && (
+            <IonButtons slot="end">
+              <IonButton color="primary" id="open-edit-post-modal">
+                ✏️ Edit
+              </IonButton>
+            </IonButtons>
+          )}
         </IonToolbar>
       </IonHeader>
 
