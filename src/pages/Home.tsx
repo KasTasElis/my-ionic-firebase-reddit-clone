@@ -1,6 +1,4 @@
-import MessageListItem from "../components/MessageListItem";
 import { useEffect, useRef, useState } from "react";
-import { Message, getMessages } from "../data/messages";
 import {
   IonButton,
   IonButtons,
@@ -21,24 +19,40 @@ import {
   IonTitle,
   IonToolbar,
   useIonToast,
-  useIonViewWillEnter,
 } from "@ionic/react";
 import "./Home.css";
 import { add, logoGoogle } from "ionicons/icons";
 import { PostForm } from "../components";
 import { SignInForm } from "../components/SignInForm";
-import { auth } from "../main";
+import { auth, db } from "../main";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { ProfileForm } from "../components/ProfileForm";
+import { collection, onSnapshot } from "@firebase/firestore";
+import { TPost } from "../types";
+import { Post } from "../components/Post";
 
 const Home: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
   const createPostModal = useRef<HTMLIonModalElement>(null);
   const signInModal = useRef<HTMLIonModalElement>(null);
   const profileModal = useRef<HTMLIonModalElement>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [posts, setPosts] = useState<TPost[]>([]);
 
   const [present] = useIonToast();
+
+  useEffect(() => {
+    const q = collection(db, "posts");
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts: TPost[] = [];
+      querySnapshot.forEach((doc) => {
+        posts.push({ ...doc.data(), id: doc.id } as TPost);
+      });
+      console.log("Posts: ", { posts });
+      setPosts(posts);
+    });
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
@@ -67,11 +81,6 @@ const Home: React.FC = () => {
 
     createPostModal.current?.present();
   };
-
-  useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
-  });
 
   const refresh = (e: CustomEvent) => {
     setTimeout(() => {
@@ -245,8 +254,8 @@ const Home: React.FC = () => {
                 <IonSelectOption value="oranges">Most Popular</IonSelectOption>
               </IonSelect>
             </IonListHeader>
-            {messages.map((m) => (
-              <MessageListItem key={m.id} message={m} />
+            {posts.map((post) => (
+              <Post key={post.id} post={post} />
             ))}
           </IonList>
         </div>
