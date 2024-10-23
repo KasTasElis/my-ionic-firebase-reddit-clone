@@ -1,67 +1,42 @@
-import { IonInput, IonTextarea, IonButton, useIonToast } from "@ionic/react";
+import { IonInput, IonTextarea, IonButton } from "@ionic/react";
 import { useState } from "react";
-import { serverTimestamp, addDoc, collection } from "firebase/firestore";
-import { db, auth } from "../main";
 
 type PostFormProps = {
-  onSubmit: ({ title, content }: { title: string; content: string }) => void;
+  onSubmit: ({
+    title,
+    content,
+  }: {
+    title: string;
+    content: string;
+  }) => Promise<unknown>;
   buttonText?: string;
   title?: string;
   content?: string;
+  submitDisabled?: boolean;
 };
 
 const PostForm = ({
   onSubmit,
   buttonText = "Post",
+  submitDisabled = false,
   title: initialTitle = "",
   content: initialContent = "",
 }: PostFormProps) => {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
-  const [loading, setLoading] = useState(false);
 
-  const reset = () => {
+  const resetForm = () => {
     setTitle("");
     setContent("");
-    setLoading(false);
   };
-
-  const [present] = useIonToast();
 
   return (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
 
-        try {
-          await addDoc(collection(db, "posts"), {
-            title,
-            content,
-            userId: auth.currentUser?.uid,
-            userName: auth.currentUser?.email,
-            upVotes: 0,
-            downVotes: 0,
-            commentCount: 0,
-            createdAt: serverTimestamp(),
-          });
-          present({
-            message: "Post added successfully",
-            duration: 1500,
-            position: "bottom",
-            color: "success",
-          });
-          onSubmit({ title, content });
-        } catch (error) {
-          console.error("Error adding document: ", error);
-          present({
-            message: "Error adding document",
-            duration: 1500,
-            position: "bottom",
-            color: "danger",
-          });
-        } finally {
-          reset();
-        }
+        await onSubmit({ title, content });
+        resetForm();
       }}
     >
       <IonInput
@@ -98,9 +73,9 @@ const PostForm = ({
         color="success"
         className="ion-margin-top"
         type="submit"
-        disabled={loading}
+        disabled={submitDisabled}
       >
-        {loading ? "Loading..." : buttonText}
+        {buttonText}
       </IonButton>
     </form>
   );

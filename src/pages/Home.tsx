@@ -30,8 +30,9 @@ import { ProfileForm } from "../components/ProfileForm";
 import { collection, onSnapshot } from "@firebase/firestore";
 import { TPost } from "../types";
 import { Post } from "../components/Post";
+import { createPost } from "../entities";
 
-const Home: React.FC = () => {
+const Home = () => {
   const createPostModal = useRef<HTMLIonModalElement>(null);
   const signInModal = useRef<HTMLIonModalElement>(null);
   const profileModal = useRef<HTMLIonModalElement>(null);
@@ -53,6 +54,30 @@ const Home: React.FC = () => {
 
     return unsubscribe;
   }, []);
+
+  const handleCreatePostOnSubmit = async ({
+    title,
+    content,
+  }: Pick<TPost, "title" | "content">) => {
+    try {
+      await createPost({ title, content });
+      present({
+        message: "🎉 Post Created!",
+        duration: 1500,
+        position: "bottom",
+        color: "success",
+      });
+      createPostModal.current?.dismiss();
+    } catch (e) {
+      console.error(e);
+      present({
+        message: "😢 Something went wrong...",
+        duration: 1500,
+        position: "bottom",
+        color: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
@@ -225,18 +250,7 @@ const Home: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent className="ion-padding">
-            <PostForm
-              onSubmit={({ title, content }) => {
-                createPostModal.current?.dismiss();
-                console.log("Post submitted: ", title, content);
-                present({
-                  message: "🎉 Post Created!",
-                  duration: 1500,
-                  position: "bottom",
-                  color: "success",
-                });
-              }}
-            />
+            <PostForm onSubmit={handleCreatePostOnSubmit} />
           </IonContent>
         </IonModal>
 
