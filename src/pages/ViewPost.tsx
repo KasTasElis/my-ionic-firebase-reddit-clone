@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { Message, getMessage } from "../data/messages";
 import {
   IonBackButton,
   IonButton,
@@ -9,7 +8,6 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
-  IonInput,
   IonItem,
   IonLabel,
   IonList,
@@ -29,17 +27,30 @@ import { personCircle } from "ionicons/icons";
 import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
+import { TPost } from "../types";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../main";
+import { readableDate } from "../utils";
 
-function ViewMessage() {
-  const [message, setMessage] = useState<Message>();
+export const ViewPost = () => {
   const params = useParams<{ id: string }>();
   const commentModal = useRef<HTMLIonModalElement>(null);
   const editPostModal = useRef<HTMLIonModalElement>(null);
   const editCommentModal = useRef<HTMLIonModalElement>(null);
+  const [post, setPost] = useState<TPost | null>(null);
+
+  console.log("params", params);
 
   useIonViewWillEnter(() => {
-    const msg = getMessage(parseInt(params.id, 10));
-    setMessage(msg);
+    const docRef = doc(db, "posts", params.id);
+    getDoc(docRef).then((doc) => {
+      if (doc.exists()) {
+        console.log("Document data:", doc.data());
+        setPost(doc.data() as TPost);
+      } else {
+        console.log("No such document!");
+      }
+    });
   });
 
   return (
@@ -59,7 +70,7 @@ function ViewMessage() {
       </IonHeader>
 
       <IonContent fullscreen>
-        {message ? (
+        {post ? (
           <>
             <IonItem>
               <IonIcon
@@ -69,25 +80,17 @@ function ViewMessage() {
               ></IonIcon>
               <IonLabel className="ion-text-wrap">
                 <h2>
-                  {message.fromName}
+                  {post.userName}
                   <span className="date">
-                    <IonNote>{message.date}</IonNote>
+                    <IonNote>{readableDate(post.createdAt)}</IonNote>
                   </span>
                 </h2>
               </IonLabel>
             </IonItem>
 
             <div className="ion-padding">
-              <h1>{message.subject}</h1>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
+              <h1>{post.title}</h1>
+              <p>{post.content}</p>
             </div>
 
             <IonModal ref={editCommentModal}>
@@ -148,8 +151,8 @@ function ViewMessage() {
               </IonHeader>
               <IonContent className="ion-padding">
                 <PostForm
-                  title={message.subject}
-                  content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                  title={post.title}
+                  content={post.content}
                   onSubmit={() => editPostModal.current?.dismiss()}
                   buttonText="Post Changes"
                 />
@@ -160,12 +163,12 @@ function ViewMessage() {
               <IonRow>
                 <IonCol>
                   <IonButton expand="block" color="success" fill="outline">
-                    ⬆️ 3 UpVote
+                    ⬆️ {post.upVotes} UpVote
                   </IonButton>
                 </IonCol>
                 <IonCol>
                   <IonButton expand="block" color="danger" fill="outline">
-                    ⬇️ 0 DownVote
+                    ⬇️ {post.downVotes} DownVote
                   </IonButton>
                 </IonCol>
               </IonRow>
@@ -202,6 +205,7 @@ function ViewMessage() {
                   </IonSelectOption>
                 </IonSelect>
               </IonListHeader>
+
               {[1, 2, 3, 4, 5].map((i) => (
                 <IonItem key={i}>
                   <IonGrid>
@@ -283,11 +287,9 @@ function ViewMessage() {
             </IonList>
           </>
         ) : (
-          <div>Message not found</div>
+          <div>Post not found</div>
         )}
       </IonContent>
     </IonPage>
   );
-}
-
-export default ViewMessage;
+};

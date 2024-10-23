@@ -1,10 +1,9 @@
 import { IonChip, IonItem, IonLabel, IonNote } from "@ionic/react";
 import "./Post.css";
 import { TPost } from "../types";
+import { readableDate } from "../utils";
 
 export const Post = ({ post }: { post: TPost }) => {
-  const createdAt = post.createdAt.toDate();
-
   return (
     <IonItem
       id="message-list-item"
@@ -15,7 +14,7 @@ export const Post = ({ post }: { post: TPost }) => {
         <div className="title">
           <h3>🤖 {post.userName}</h3>
           <span className="date">
-            <IonNote>{createdAt.toISOString()}</IonNote>
+            <IonNote>{readableDate(post.createdAt)}</IonNote>
           </span>
         </div>
 
