@@ -21,7 +21,7 @@ export const ProfileForm = ({
     >
       <IonInput
         value={userName}
-        onIonChange={(e) => setUserName(e.detail.value!)}
+        onIonInput={(e) => setUserName(e.detail.value!)}
         label="Username"
         labelPlacement="floating"
         placeholder="Enter Username"

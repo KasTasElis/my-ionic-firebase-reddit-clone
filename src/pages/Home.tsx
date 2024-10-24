@@ -31,6 +31,7 @@ import { collection, onSnapshot } from "@firebase/firestore";
 import { TPost } from "../types";
 import { Post } from "../components/Post";
 import { createPost } from "../entities";
+import { updateProfile } from "firebase/auth";
 
 const Home = () => {
   const createPostModal = useRef<HTMLIonModalElement>(null);
@@ -40,6 +41,40 @@ const Home = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
 
   const [present] = useIonToast();
+
+  const onSubmitUpdateProfile = async (username: string) => {
+    try {
+      // i can assume the user will be there, because
+      // the modal that triggers this function is only available to signed in users.
+
+      await updateProfile(auth.currentUser!, {
+        displayName: username,
+      });
+
+      const updatedUserProfile: User = {
+        ...(user as User),
+        displayName: username,
+      };
+      setUser(updatedUserProfile);
+
+      profileModal.current?.dismiss();
+
+      present({
+        message: "👍 Profile Updated!",
+        duration: 1500,
+        position: "bottom",
+        color: "success",
+      });
+    } catch (error) {
+      console.error(error);
+      present({
+        message: "😢 Something went wrong...",
+        duration: 1500,
+        position: "bottom",
+        color: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     const q = collection(db, "posts");
@@ -51,7 +86,7 @@ const Home = () => {
           id: doc.id,
         } as TPost);
       });
-      console.log("Posts: ", { posts });
+
       setPosts(posts);
     });
 
@@ -139,8 +174,8 @@ const Home = () => {
     profileModal.current?.dismiss();
   };
 
-  const getUserEmail = () => {
-    return user?.email || "what...?";
+  const getDisplayName = () => {
+    return user?.displayName || user?.email || "Unknown";
   };
 
   return (
@@ -205,7 +240,10 @@ const Home = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent className="ion-padding">
-            <ProfileForm username={getUserEmail()} onSubmit={() => {}} />
+            <ProfileForm
+              username={getDisplayName()}
+              onSubmit={onSubmitUpdateProfile}
+            />
           </IonContent>
         </IonModal>
 
