@@ -27,11 +27,53 @@ import { SignInForm } from "../components/SignInForm";
 import { auth, db } from "../main";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { ProfileForm } from "../components/ProfileForm";
-import { collection, onSnapshot } from "@firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  OrderByDirection,
+  query,
+} from "@firebase/firestore";
 import { TPost } from "../types";
 import { Post } from "../components/Post";
 import { createPost } from "../entities";
 import { updateProfile } from "firebase/auth";
+
+type TSortOptions =
+  | "latestOnTop"
+  | "oldestOnTop"
+  | "popularOnTop"
+  | "unpopularOnTop";
+
+const getSortingOptions = (
+  sortValue: TSortOptions
+): { direction: OrderByDirection; field: keyof TPost } => {
+  if (sortValue === "latestOnTop") {
+    return {
+      field: "createdAt",
+      direction: "desc",
+    };
+  }
+
+  if (sortValue === "oldestOnTop") {
+    return {
+      field: "createdAt",
+      direction: "asc",
+    };
+  }
+
+  if (sortValue === "popularOnTop") {
+    return {
+      field: "upVotes",
+      direction: "desc",
+    };
+  }
+
+  return {
+    field: "downVotes",
+    direction: "desc",
+  };
+};
 
 const Home = () => {
   const createPostModal = useRef<HTMLIonModalElement>(null);
@@ -39,6 +81,7 @@ const Home = () => {
   const profileModal = useRef<HTMLIonModalElement>(null);
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<TPost[]>([]);
+  const [sortBy, setSortBy] = useState<TSortOptions>("latestOnTop");
 
   const [present] = useIonToast();
 
@@ -79,7 +122,9 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const q = collection(db, "posts");
+    const { field, direction } = getSortingOptions(sortBy);
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, orderBy(field, direction));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const posts: TPost[] = [];
       querySnapshot.forEach((doc) => {
@@ -93,7 +138,7 @@ const Home = () => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [sortBy]);
 
   const handleCreatePostOnSubmit = async ({
     title,
@@ -123,7 +168,6 @@ const Home = () => {
     return onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        console.log("User is signed in: ", user);
       } else {
         setUser(null);
       }
@@ -305,10 +349,21 @@ const Home = () => {
                 interface="popover"
                 placeholder="Sort By..."
                 color="medium"
+                value={sortBy}
+                onIonChange={(e) => setSortBy(e.detail.value)}
               >
-                <IonSelectOption value="apples">Latest on Top</IonSelectOption>
-                <IonSelectOption value="apples">Oldest on Top</IonSelectOption>
-                <IonSelectOption value="oranges">Most Popular</IonSelectOption>
+                <IonSelectOption value="latestOnTop">
+                  Latest on Top
+                </IonSelectOption>
+                <IonSelectOption value="oldestOnTop">
+                  Oldest on Top
+                </IonSelectOption>
+                <IonSelectOption value="popularOnTop">
+                  Most Popular on Top
+                </IonSelectOption>
+                <IonSelectOption value="unpopularOnTop">
+                  Least Popular on Top
+                </IonSelectOption>
               </IonSelect>
             </IonListHeader>
             {posts.map((post) => (
