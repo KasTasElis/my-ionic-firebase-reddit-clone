@@ -29,11 +29,22 @@ import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
 import { TPost } from "../types";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { auth, db } from "../main";
 import { readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
 import { updatePost, createComment } from "../entities";
+
+type TComment = {
+  id: string;
+  content: string;
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
+  userId: string;
+  userName: string;
+  upVotes: number;
+  downVotes: number;
+};
 
 export const ViewPost = () => {
   const params = useParams<{ id: string }>();
@@ -41,6 +52,7 @@ export const ViewPost = () => {
   const editPostModal = useRef<HTMLIonModalElement>(null);
   const editCommentModal = useRef<HTMLIonModalElement>(null);
   const [post, setPost] = useState<TPost | null>(null);
+  const [comments, setComments] = useState<TComment[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   const [present] = useIonToast();
@@ -98,6 +110,7 @@ export const ViewPost = () => {
   }, []);
 
   useIonViewWillEnter(() => {
+    // observe post
     const docRef = doc(db, "posts", params.id);
     return onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
@@ -105,6 +118,21 @@ export const ViewPost = () => {
       } else {
         console.log("No such document!");
       }
+    });
+  });
+
+  useIonViewWillEnter(() => {
+    // observe post comments
+    const q = collection(db, `posts/${params.id}/comments`);
+    return onSnapshot(q, (querySnapshot) => {
+      const comments: any[] = [];
+      querySnapshot.forEach((doc) => {
+        comments.push({
+          ...doc.data({ serverTimestamps: "estimate" }),
+          id: doc.id,
+        });
+      });
+      setComments(comments);
     });
   });
 
@@ -268,57 +296,54 @@ export const ViewPost = () => {
                 </IonSelect>
               </IonListHeader>
 
-              {[1, 2, 3, 4, 5].map((i) => (
-                <IonItem key={i}>
-                  <IonGrid>
-                    <IonRow>
-                      <IonCol>
-                        <IonText>
-                          <h6 style={{ margin: 0 }}>🤖 John Smith</h6>
-                        </IonText>
-                      </IonCol>
-                      <IonCol className="ion-text-end">
-                        <IonNote>13m ago</IonNote>
-                      </IonCol>
-                    </IonRow>
+              {comments === null ? (
+                <div>Loading...</div>
+              ) : comments.length === 0 ? (
+                <div>We have no comments...</div>
+              ) : (
+                comments.map((comment, i) => (
+                  <IonItem key={comment.id}>
+                    <IonGrid>
+                      <IonRow>
+                        <IonCol>
+                          <IonText>
+                            <h6 style={{ margin: 0 }}>🤖 {comment.userName}</h6>
+                          </IonText>
+                        </IonCol>
+                        <IonCol className="ion-text-end">
+                          <IonNote>
+                            {readableDate(
+                              comment.updatedAt || comment.createdAt
+                            )}
+                          </IonNote>
+                        </IonCol>
+                      </IonRow>
 
-                    <IonRow>
-                      <IonCol>
-                        <IonText>
-                          <p style={{ margin: 0 }}>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Accusantium non omnis quisquam quia!
-                            Praesentium doloremque sit.
-                          </p>
-                        </IonText>
-                      </IonCol>
-                    </IonRow>
+                      <IonRow>
+                        <IonCol>
+                          <IonText>
+                            <p style={{ margin: 0 }}>{comment.content}</p>
+                          </IonText>
+                        </IonCol>
+                      </IonRow>
 
-                    <IonRow>
-                      {/* Edit My Comment */}
-                      {i !== 2 ? (
-                        <>
-                          <IonCol>
-                            <IonButton
-                              expand="block"
-                              color="success"
-                              fill="clear"
-                            >
-                              ⬆️ 3 UpVote
-                            </IonButton>
-                          </IonCol>
-                          <IonCol>
-                            <IonButton
-                              expand="block"
-                              color="danger"
-                              fill="clear"
-                            >
-                              ⬇️ 0 DownVote
-                            </IonButton>
-                          </IonCol>
-                        </>
-                      ) : (
-                        <>
+                      <IonRow>
+                        <IonCol>
+                          <IonButton
+                            expand="block"
+                            color="success"
+                            fill="clear"
+                          >
+                            ⬆️ {comment.upVotes} UpVote
+                          </IonButton>
+                        </IonCol>
+                        <IonCol>
+                          <IonButton expand="block" color="danger" fill="clear">
+                            ⬇️ {comment.downVotes} DownVote
+                          </IonButton>
+                        </IonCol>
+
+                        {comment.userId === auth.currentUser?.uid ? (
                           <IonCol>
                             <IonButton
                               expand="block"
@@ -331,21 +356,12 @@ export const ViewPost = () => {
                               ✏️ Edit
                             </IonButton>
                           </IonCol>
-                          <IonCol>
-                            <IonButton
-                              expand="block"
-                              color="danger"
-                              fill="clear"
-                            >
-                              🗑️ Delete
-                            </IonButton>
-                          </IonCol>
-                        </>
-                      )}
-                    </IonRow>
-                  </IonGrid>
-                </IonItem>
-              ))}
+                        ) : null}
+                      </IonRow>
+                    </IonGrid>
+                  </IonItem>
+                ))
+              )}
             </IonList>
           </>
         ) : (
