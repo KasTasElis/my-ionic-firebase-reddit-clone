@@ -1,7 +1,8 @@
 import { IonTextarea, IonButton } from "@ionic/react";
+import { useState } from "react";
 
 type CommentFormProps = {
-  onSubmit: () => void;
+  onSubmit: ({ content }: { content: string }) => Promise<unknown>;
   buttonText?: string;
   content?: string;
 };
@@ -9,10 +10,18 @@ type CommentFormProps = {
 const CommentForm = ({
   onSubmit,
   buttonText = "Post Comment",
-  content,
+  content: initialContent = "",
 }: CommentFormProps) => {
+  const [content, setContent] = useState(initialContent);
+
   return (
-    <>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        onSubmit({ content });
+      }}
+    >
       <IonTextarea
         className="ion-padding-bottom"
         label="Comment"
@@ -26,17 +35,18 @@ const CommentForm = ({
           `${maxLength - inputLength} characters remaining`
         }
         value={content}
+        onIonInput={(e) => setContent(String(e.detail.value))}
       ></IonTextarea>
 
       <IonButton
         expand="block"
         color="success"
         className="ion-margin-top"
-        onClick={onSubmit}
+        type="submit"
       >
         {buttonText}
       </IonButton>
-    </>
+    </form>
   );
 };
 

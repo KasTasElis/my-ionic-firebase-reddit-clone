@@ -29,11 +29,11 @@ import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
 import { TPost } from "../types";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../main";
 import { readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
-import { updatePost } from "../entities";
+import { updatePost, createComment } from "../entities";
 
 export const ViewPost = () => {
   const params = useParams<{ id: string }>();
@@ -44,6 +44,25 @@ export const ViewPost = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const [present] = useIonToast();
+
+  const onSubmitCreateComment = async ({ content }: { content: string }) => {
+    try {
+      await createComment({ postId: params.id, content });
+
+      present({
+        message: "Commented successfully",
+        duration: 1500,
+        color: "success",
+      });
+      commentModal.current?.dismiss();
+    } catch (error) {
+      present({
+        message: "Failed to comment on post",
+        duration: 1500,
+        color: "danger",
+      });
+    }
+  };
 
   const onSubmitEditPost = async ({
     title,
@@ -174,7 +193,7 @@ export const ViewPost = () => {
                 </IonToolbar>
               </IonHeader>
               <IonContent className="ion-padding">
-                <CommentForm onSubmit={() => commentModal.current?.dismiss()} />
+                <CommentForm onSubmit={onSubmitCreateComment} />
               </IonContent>
             </IonModal>
 

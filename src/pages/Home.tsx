@@ -44,6 +44,8 @@ const Home = () => {
 
   const onSubmitUpdateProfile = async (username: string) => {
     try {
+      // TODO: should come up with a way to update all mentions of the user's name in posts and comments (a server function?)
+
       // i can assume the user will be there, because
       // the modal that triggers this function is only available to signed in users.
 
