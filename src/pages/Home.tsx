@@ -46,7 +46,10 @@ const Home = () => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const posts: TPost[] = [];
       querySnapshot.forEach((doc) => {
-        posts.push({ ...doc.data(), id: doc.id } as TPost);
+        posts.push({
+          ...doc.data({ serverTimestamps: "estimate" }), // prevents null problem
+          id: doc.id,
+        } as TPost);
       });
       console.log("Posts: ", { posts });
       setPosts(posts);

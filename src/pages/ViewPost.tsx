@@ -82,7 +82,7 @@ export const ViewPost = () => {
     const docRef = doc(db, "posts", params.id);
     return onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
-        setPost(doc.data() as TPost);
+        setPost(doc.data({ serverTimestamps: "estimate" }) as TPost);
       } else {
         console.log("No such document!");
       }
