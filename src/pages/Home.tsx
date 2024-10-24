@@ -39,7 +39,7 @@ const Home = () => {
   const signInModal = useRef<HTMLIonModalElement>(null);
   const profileModal = useRef<HTMLIonModalElement>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<TPost[]>([]);
+  const [posts, setPosts] = useState<TPost[] | null>(null);
   const [sortBy, setSortBy] = useState<TSortOptions>("latestOnTop");
 
   const [present] = useIonToast();
@@ -325,9 +325,14 @@ const Home = () => {
                 </IonSelectOption>
               </IonSelect>
             </IonListHeader>
-            {posts.map((post) => (
-              <Post key={post.id} post={post} />
-            ))}
+
+            {posts === null ? (
+              <div>Loading...</div>
+            ) : posts.length === 0 ? (
+              <div>No posts yet...</div>
+            ) : (
+              posts.map((post) => <Post key={post.id} post={post} />)
+            )}
           </IonList>
         </div>
       </IonContent>
