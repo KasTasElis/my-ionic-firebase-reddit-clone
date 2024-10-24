@@ -12,3 +12,14 @@ export type TPost = {
   downVotes: number;
   commentCount: number;
 };
+
+export type TComment = {
+  id: string;
+  content: string;
+  userId: string;
+  userName: string;
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
+  upVotes: number;
+  downVotes: number;
+};

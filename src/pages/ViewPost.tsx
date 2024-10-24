@@ -28,23 +28,12 @@ import { personCircle } from "ionicons/icons";
 import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
-import { TPost } from "../types";
+import { TComment, TPost } from "../types";
 import { collection, doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { auth, db } from "../main";
 import { readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
-import { updatePost, createComment } from "../entities";
-
-type TComment = {
-  id: string;
-  content: string;
-  createdAt: Timestamp;
-  updatedAt?: Timestamp;
-  userId: string;
-  userName: string;
-  upVotes: number;
-  downVotes: number;
-};
+import { updatePost, createComment, updateComment } from "../entities";
 
 export const ViewPost = () => {
   const params = useParams<{ id: string }>();
@@ -54,8 +43,11 @@ export const ViewPost = () => {
   const [post, setPost] = useState<TPost | null>(null);
   const [comments, setComments] = useState<TComment[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [editingComment, setEditingComment] = useState<TComment | null>(null);
 
   const [present] = useIonToast();
+
+  const openEditCommentModal = (commentId: string) => {};
 
   const onSubmitCreateComment = async ({ content }: { content: string }) => {
     try {
@@ -199,9 +191,32 @@ export const ViewPost = () => {
               </IonHeader>
               <IonContent className="ion-padding">
                 <CommentForm
-                  onSubmit={() => editCommentModal.current?.dismiss()}
+                  onSubmit={async ({ content }) => {
+                    try {
+                      await updateComment(
+                        params.id || "",
+                        editingComment?.id || "",
+                        {
+                          content,
+                        }
+                      );
+                      present({
+                        message: "Comment updated successfully",
+                        duration: 1500,
+                        color: "success",
+                      });
+                      setEditingComment(null);
+                      editCommentModal.current?.dismiss();
+                    } catch (error) {
+                      present({
+                        message: "Failed to update comment",
+                        duration: 1500,
+                        color: "danger",
+                      });
+                    }
+                  }}
                   buttonText="Post Changes"
-                  content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+                  content={editingComment?.content || ""}
                 />
               </IonContent>
             </IonModal>
@@ -349,9 +364,10 @@ export const ViewPost = () => {
                               expand="block"
                               color="primary"
                               fill="clear"
-                              onClick={() =>
-                                editCommentModal.current?.present()
-                              }
+                              onClick={() => {
+                                setEditingComment(comment);
+                                editCommentModal.current?.present();
+                              }}
                             >
                               ✏️ Edit
                             </IonButton>

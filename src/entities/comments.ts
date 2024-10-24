@@ -9,17 +9,7 @@ import {
 } from "@firebase/firestore";
 import { db, auth } from "../main";
 
-type TComment = {
-  id: string;
-  content: string;
-  userId: string;
-  userName: string;
-  createdAt: Timestamp;
-  updatedAt?: Timestamp;
-  upVotes: number;
-  downVotes: number;
-};
-
+// TODO: increment comment count in post
 export const createComment = ({
   postId,
   content,
@@ -41,20 +31,20 @@ export const createComment = ({
   });
 };
 
-// export const updatePost = (
-//   id: string,
-//   { title, content }: Pick<TPost, "title" | "content">
-// ) => {
-//   return setDoc(
-//     doc(db, "posts", id),
-//     {
-//       title,
-//       content,
-//       updatedAt: serverTimestamp(),
-//     },
-//     { merge: true }
-//   );
-// };
+export const updateComment = (
+  postId: string,
+  commentId: string,
+  { content }: { content: string }
+) => {
+  return setDoc(
+    doc(db, `posts/${postId}/comments`, commentId),
+    {
+      content,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+};
 
 // export const deletePost = (id: string) => {
 //   return deleteDoc(doc(db, "posts", id));
