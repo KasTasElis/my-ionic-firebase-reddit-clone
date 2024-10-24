@@ -50,7 +50,7 @@ const PostForm = ({
         counterFormatter={(inputLength, maxLength) =>
           `${maxLength - inputLength} characters remaining`
         }
-        onIonChange={(e) => setTitle(String(e.detail.value))}
+        onIonInput={(e) => setTitle(String(e.target.value))}
       ></IonInput>
 
       <IonTextarea
@@ -65,7 +65,7 @@ const PostForm = ({
           `${maxLength - inputLength} characters remaining`
         }
         value={content}
-        onIonChange={(e) => setContent(String(e.detail.value))}
+        onIonInput={(e) => setContent(String(e.target.value))}
       ></IonTextarea>
 
       <IonButton

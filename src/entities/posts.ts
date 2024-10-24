@@ -29,11 +29,15 @@ export const updatePost = (
   id: string,
   { title, content }: Pick<TPost, "title" | "content">
 ) => {
-  return setDoc(doc(db, "posts", id), {
-    title,
-    content,
-    updatedAt: serverTimestamp(),
-  });
+  return setDoc(
+    doc(db, "posts", id),
+    {
+      title,
+      content,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 };
 
 export const deletePost = (id: string) => {

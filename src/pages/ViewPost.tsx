@@ -50,12 +50,14 @@ export const ViewPost = () => {
     content,
   }: Pick<TPost, "title" | "content">) => {
     try {
-      await updatePost(params.id, { title, content });
+      const result = await updatePost(params.id, { title, content });
+      console.log({ result });
       present({
         message: "Post updated successfully",
         duration: 1500,
         color: "success",
       });
+      editPostModal.current?.dismiss();
     } catch (error) {
       present({
         message: "Failed to update post",
