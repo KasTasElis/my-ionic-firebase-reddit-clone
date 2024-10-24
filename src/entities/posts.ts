@@ -26,6 +26,7 @@ export const createPost = ({
     downVotes: 0,
     commentCount: 0,
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
 };
 

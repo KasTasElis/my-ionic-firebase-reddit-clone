@@ -169,9 +169,7 @@ export const ViewPost = () => {
                 <h2>
                   {post.userName}
                   <span className="date">
-                    <IonNote>
-                      {readableDate(post.updatedAt || post.createdAt)}
-                    </IonNote>
+                    <IonNote>{readableDate(post.updatedAt)}</IonNote>
                   </span>
                 </h2>
               </IonLabel>
@@ -338,11 +336,7 @@ export const ViewPost = () => {
                           </IonText>
                         </IonCol>
                         <IonCol className="ion-text-end">
-                          <IonNote>
-                            {readableDate(
-                              comment.updatedAt || comment.createdAt
-                            )}
-                          </IonNote>
+                          <IonNote>{readableDate(comment.updatedAt)}</IonNote>
                         </IonCol>
                       </IonRow>
 

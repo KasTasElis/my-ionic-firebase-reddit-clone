@@ -4,8 +4,6 @@ import {
   doc,
   serverTimestamp,
   setDoc,
-  deleteDoc,
-  Timestamp,
 } from "@firebase/firestore";
 import { db, auth } from "../main";
 
@@ -28,6 +26,7 @@ export const createComment = ({
     upVotes: 0,
     downVotes: 0,
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
 };
 

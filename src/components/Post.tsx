@@ -14,7 +14,7 @@ export const Post = ({ post }: { post: TPost }) => {
         <div className="title">
           <h3>🤖 {post.userName}</h3>
           <span className="date">
-            <IonNote>{readableDate(post.updatedAt || post.createdAt)}</IonNote>
+            <IonNote>{readableDate(post.createdAt)}</IonNote>
           </span>
         </div>
 

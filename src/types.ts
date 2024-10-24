@@ -1,28 +1,34 @@
 import { Timestamp } from "@firebase/firestore";
 
-export type TPost = {
+export type TEntityBase = {
   id: string;
-  userId: string;
-  title: string;
-  content: string;
-  userName: string;
   createdAt: Timestamp;
-  updatedAt?: Timestamp;
-  upVotes: number;
-  downVotes: number;
-  commentCount: number;
+  updatedAt: Timestamp;
 };
 
-export type TComment = {
-  id: string;
-  content: string;
-  userId: string;
+export type TUserInfo = {
   userName: string;
-  createdAt: Timestamp;
-  updatedAt?: Timestamp;
+  userId: string;
+};
+
+export type TVotes = {
   upVotes: number;
   downVotes: number;
 };
+
+export type TPost = {
+  title: string;
+  content: string;
+  commentCount: number;
+} & TEntityBase &
+  TUserInfo &
+  TVotes;
+
+export type TComment = {
+  content: string;
+} & TEntityBase &
+  TUserInfo &
+  TVotes;
 
 export type TSortOptions =
   | "latestOnTop"

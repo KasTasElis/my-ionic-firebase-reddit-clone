@@ -1,6 +1,7 @@
 import { OrderByDirection, Timestamp } from "@firebase/firestore";
 import { TPost, TSortOptions } from "./types";
 
+// TODO: implement readable date
 export const readableDate = (timestamp: Timestamp) => {
   return timestamp.toDate().toISOString();
 };
