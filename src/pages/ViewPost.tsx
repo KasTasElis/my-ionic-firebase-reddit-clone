@@ -28,10 +28,17 @@ import { personCircle } from "ionicons/icons";
 import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
-import { TComment, TPost } from "../types";
-import { collection, doc, onSnapshot, Timestamp } from "firebase/firestore";
+import { TComment, TPost, TSortOptions } from "../types";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  Timestamp,
+} from "firebase/firestore";
 import { auth, db } from "../main";
-import { readableDate } from "../utils";
+import { getSortingOptions, readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
 import { updatePost, createComment, updateComment } from "../entities";
 
@@ -44,10 +51,9 @@ export const ViewPost = () => {
   const [comments, setComments] = useState<TComment[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [editingComment, setEditingComment] = useState<TComment | null>(null);
+  const [sortBy, setSortBy] = useState<TSortOptions>("latestOnTop");
 
   const [present] = useIonToast();
-
-  const openEditCommentModal = (commentId: string) => {};
 
   const onSubmitCreateComment = async ({ content }: { content: string }) => {
     try {
@@ -94,7 +100,6 @@ export const ViewPost = () => {
     return onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        console.log("User is signed in: ", user);
       } else {
         setUser(null);
       }
@@ -113,9 +118,11 @@ export const ViewPost = () => {
     });
   });
 
-  useIonViewWillEnter(() => {
+  useEffect(() => {
     // observe post comments
-    const q = collection(db, `posts/${params.id}/comments`);
+    const { field, direction } = getSortingOptions(sortBy);
+    const commentsRef = collection(db, `posts/${params.id}/comments`);
+    const q = query(commentsRef, orderBy(field, direction));
     return onSnapshot(q, (querySnapshot) => {
       const comments: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -126,7 +133,7 @@ export const ViewPost = () => {
       });
       setComments(comments);
     });
-  });
+  }, [sortBy]);
 
   return (
     <IonPage id="view-message-page">
@@ -298,15 +305,20 @@ export const ViewPost = () => {
                   interface="popover"
                   placeholder="Sort By..."
                   color="medium"
+                  value={sortBy}
+                  onIonChange={(e) => setSortBy(e.detail.value)}
                 >
-                  <IonSelectOption value="apples">
+                  <IonSelectOption value="latestOnTop">
                     Latest on Top
                   </IonSelectOption>
-                  <IonSelectOption value="apples">
+                  <IonSelectOption value="oldestOnTop">
                     Oldest on Top
                   </IonSelectOption>
-                  <IonSelectOption value="oranges">
-                    Most Popular
+                  <IonSelectOption value="popularOnTop">
+                    Most Popular on Top
+                  </IonSelectOption>
+                  <IonSelectOption value="unpopularOnTop">
+                    Least Popular on Top
                   </IonSelectOption>
                 </IonSelect>
               </IonListHeader>

@@ -23,3 +23,9 @@ export type TComment = {
   upVotes: number;
   downVotes: number;
 };
+
+export type TSortOptions =
+  | "latestOnTop"
+  | "oldestOnTop"
+  | "popularOnTop"
+  | "unpopularOnTop";

@@ -27,53 +27,12 @@ import { SignInForm } from "../components/SignInForm";
 import { auth, db } from "../main";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { ProfileForm } from "../components/ProfileForm";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  OrderByDirection,
-  query,
-} from "@firebase/firestore";
-import { TPost } from "../types";
+import { collection, onSnapshot, orderBy, query } from "@firebase/firestore";
+import { TPost, TSortOptions } from "../types";
 import { Post } from "../components/Post";
 import { createPost } from "../entities";
 import { updateProfile } from "firebase/auth";
-
-type TSortOptions =
-  | "latestOnTop"
-  | "oldestOnTop"
-  | "popularOnTop"
-  | "unpopularOnTop";
-
-const getSortingOptions = (
-  sortValue: TSortOptions
-): { direction: OrderByDirection; field: keyof TPost } => {
-  if (sortValue === "latestOnTop") {
-    return {
-      field: "createdAt",
-      direction: "desc",
-    };
-  }
-
-  if (sortValue === "oldestOnTop") {
-    return {
-      field: "createdAt",
-      direction: "asc",
-    };
-  }
-
-  if (sortValue === "popularOnTop") {
-    return {
-      field: "upVotes",
-      direction: "desc",
-    };
-  }
-
-  return {
-    field: "downVotes",
-    direction: "desc",
-  };
-};
+import { getSortingOptions } from "../utils";
 
 const Home = () => {
   const createPostModal = useRef<HTMLIonModalElement>(null);
