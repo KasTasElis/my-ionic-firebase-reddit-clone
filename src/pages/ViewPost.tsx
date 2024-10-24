@@ -29,7 +29,7 @@ import { useParams } from "react-router";
 import "./ViewMessage.css";
 import { CommentForm, PostForm } from "../components";
 import { TPost } from "../types";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../main";
 import { readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
@@ -80,9 +80,8 @@ export const ViewPost = () => {
 
   useIonViewWillEnter(() => {
     const docRef = doc(db, "posts", params.id);
-    getDoc(docRef).then((doc) => {
+    return onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
-        console.log("Document data:", doc.data());
         setPost(doc.data() as TPost);
       } else {
         console.log("No such document!");
