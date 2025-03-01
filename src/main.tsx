@@ -2,8 +2,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDf_UkwIgB8wL-Rdm0db6SlkYZlcZnbUq4",
@@ -17,6 +17,9 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+connectAuthEmulator(auth, "http://localhost:9099");
+connectFirestoreEmulator(db, "localhost", 8080);
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
