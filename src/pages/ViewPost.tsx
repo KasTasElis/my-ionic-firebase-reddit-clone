@@ -12,22 +12,23 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonModal,
   IonNote,
   IonPage,
   IonRow,
   IonSelect,
   IonSelectOption,
   IonText,
-  IonTitle,
   IonToolbar,
-  useIonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { personCircle } from "ionicons/icons";
 import { useParams } from "react-router";
 import "./ViewMessage.css";
-import { CommentForm, PostForm } from "../components";
+import {
+  AddCommentModal,
+  EditCommentModal,
+  EditPostModal,
+} from "../components";
 import { TComment, TPost, TSortOptions } from "../types";
 import {
   collection,
@@ -35,18 +36,10 @@ import {
   onSnapshot,
   orderBy,
   query,
-  Timestamp,
 } from "firebase/firestore";
 import { auth, db } from "../main";
 import { getSortingOptions, readableDate } from "../utils";
 import { onAuthStateChanged, User } from "@firebase/auth";
-import {
-  updatePost,
-  createComment,
-  updateComment,
-  deletePost,
-} from "../entities";
-import { useHistory } from "react-router-dom"; // Add this import
 
 export const ViewPost = () => {
   const params = useParams<{ id: string }>();
@@ -58,69 +51,6 @@ export const ViewPost = () => {
   const [user, setUser] = useState<User | null>(null);
   const [editingComment, setEditingComment] = useState<TComment | null>(null);
   const [sortBy, setSortBy] = useState<TSortOptions>("latestOnTop");
-
-  const [present] = useIonToast();
-  const history = useHistory(); // Add this line
-
-  const onSubmitCreateComment = async ({ content }: { content: string }) => {
-    try {
-      await createComment({ postId: params.id, content });
-
-      present({
-        message: "Commented successfully",
-        duration: 1500,
-        color: "success",
-      });
-      commentModal.current?.dismiss();
-    } catch (error) {
-      present({
-        message: "Failed to comment on post",
-        duration: 1500,
-        color: "danger",
-      });
-    }
-  };
-
-  const onSubmitEditPost = async ({
-    title,
-    content,
-  }: Pick<TPost, "title" | "content">) => {
-    try {
-      const result = await updatePost(params.id, { title, content });
-      console.log({ result });
-      present({
-        message: "Post updated successfully",
-        duration: 1500,
-        color: "success",
-      });
-      editPostModal.current?.dismiss();
-    } catch (error) {
-      present({
-        message: "Failed to update post",
-        duration: 1500,
-        color: "danger",
-      });
-    }
-  };
-
-  const onDeletePost = async () => {
-    try {
-      await deletePost(params.id);
-      present({
-        message: "Post deleted successfully",
-        duration: 1500,
-        color: "success",
-      });
-      editPostModal.current?.dismiss();
-      history.push("/home"); // Redirect to home after deletion
-    } catch (error) {
-      present({
-        message: "Failed to delete post",
-        duration: 1500,
-        color: "danger",
-      });
-    }
-  };
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
@@ -206,102 +136,22 @@ export const ViewPost = () => {
               <p>{post.content}</p>
             </div>
 
-            <IonModal ref={editCommentModal}>
-              <IonHeader>
-                <IonToolbar>
-                  <IonButtons slot="start">
-                    <IonButton
-                      color="danger"
-                      onClick={() => editCommentModal.current?.dismiss()}
-                    >
-                      Cancel
-                    </IonButton>
-                  </IonButtons>
-                  <IonTitle>Edit Comment</IonTitle>
-                </IonToolbar>
-              </IonHeader>
-              <IonContent className="ion-padding">
-                <CommentForm
-                  onSubmit={async ({ content }) => {
-                    try {
-                      await updateComment(
-                        params.id || "",
-                        editingComment?.id || "",
-                        {
-                          content,
-                        }
-                      );
-                      present({
-                        message: "Comment updated successfully",
-                        duration: 1500,
-                        color: "success",
-                      });
-                      setEditingComment(null);
-                      editCommentModal.current?.dismiss();
-                    } catch (error) {
-                      present({
-                        message: "Failed to update comment",
-                        duration: 1500,
-                        color: "danger",
-                      });
-                    }
-                  }}
-                  buttonText="Post Changes"
-                  content={editingComment?.content || ""}
-                />
-              </IonContent>
-            </IonModal>
+            <EditCommentModal
+              modalRef={editCommentModal}
+              postId={params.id}
+              comment={editingComment}
+              onCommentUpdated={() => setEditingComment(null)}
+            />
 
-            <IonModal ref={commentModal}>
-              <IonHeader>
-                <IonToolbar>
-                  <IonButtons slot="start">
-                    <IonButton
-                      color="danger"
-                      onClick={() => commentModal.current?.dismiss()}
-                    >
-                      Cancel
-                    </IonButton>
-                  </IonButtons>
-                  <IonTitle>Comment</IonTitle>
-                </IonToolbar>
-              </IonHeader>
-              <IonContent className="ion-padding">
-                <CommentForm onSubmit={onSubmitCreateComment} />
-              </IonContent>
-            </IonModal>
+            <AddCommentModal modalRef={commentModal} postId={params.id} />
 
-            <IonModal ref={editPostModal}>
-              <IonHeader>
-                <IonToolbar>
-                  <IonButtons slot="start">
-                    <IonButton
-                      color="danger"
-                      onClick={() => editPostModal.current?.dismiss()}
-                    >
-                      Cancel
-                    </IonButton>
-                  </IonButtons>
-                  <IonTitle>Edit Post</IonTitle>
-                </IonToolbar>
-              </IonHeader>
-              <IonContent className="ion-padding">
-                <PostForm
-                  title={post.title}
-                  content={post.content}
-                  onSubmit={onSubmitEditPost}
-                  buttonText="Post Changes"
-                />
-                <IonButton
-                  expand="block"
-                  color="danger"
-                  onClick={onDeletePost}
-                  style={{ marginTop: "1rem" }}
-                >
-                  🗑️ Delete Post
-                </IonButton>
-              </IonContent>
-            </IonModal>
+            {post && (
+              <EditPostModal
+                modalRef={editPostModal}
+                post={post}
+                postId={params.id}
+              />
+            )}
 
             <IonGrid>
               <IonRow>
@@ -360,7 +210,7 @@ export const ViewPost = () => {
               ) : comments.length === 0 ? (
                 <div>We have no comments...</div>
               ) : (
-                comments.map((comment, i) => (
+                comments.map((comment) => (
                   <IonItem key={comment.id}>
                     <IonGrid>
                       <IonRow>
