@@ -43,7 +43,8 @@ export const EditPostModal: React.FC<EditPostModalProps> = ({
       modalRef.current?.dismiss();
     } catch (error) {
       present({
-        message: "Failed to update post",
+        message:
+          error instanceof Error ? error.message : "Failed to update post",
         duration: 1500,
         color: "danger",
       });
@@ -59,10 +60,11 @@ export const EditPostModal: React.FC<EditPostModalProps> = ({
         color: "success",
       });
       modalRef.current?.dismiss();
-      history.push("/home"); // Redirect to home after deletion
+      history.push("/home");
     } catch (error) {
       present({
-        message: "Failed to delete post",
+        message:
+          error instanceof Error ? error.message : "Failed to delete post",
         duration: 1500,
         color: "danger",
       });

@@ -42,7 +42,8 @@ export const EditCommentModal: React.FC<EditCommentModalProps> = ({
       modalRef.current?.dismiss();
     } catch (error) {
       present({
-        message: "Failed to update comment",
+        message:
+          error instanceof Error ? error.message : "Failed to update comment",
         duration: 1500,
         color: "danger",
       });

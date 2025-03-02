@@ -5,6 +5,7 @@ import {
   serverTimestamp,
   setDoc,
   deleteDoc,
+  getDoc,
 } from "@firebase/firestore";
 import { db, auth } from "../main";
 import { TPost } from "../types";
@@ -34,17 +35,47 @@ export const updatePost = (
   id: string,
   { title, content }: Pick<TPost, "title" | "content">
 ) => {
-  return setDoc(
-    doc(db, "posts", id),
-    {
-      title,
-      content,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
+  if (!auth.currentUser) {
+    throw new Error("User is not signed in.");
+  }
+
+  return getDoc(doc(db, "posts", id)).then((docSnap) => {
+    if (!docSnap.exists()) {
+      throw new Error("Post not found");
+    }
+
+    const post = docSnap.data() as TPost;
+    if (post.userId !== auth.currentUser!.uid) {
+      throw new Error("You don't have permission to edit this post");
+    }
+
+    return setDoc(
+      doc(db, "posts", id),
+      {
+        title,
+        content,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  });
 };
 
 export const deletePost = (id: string) => {
-  return deleteDoc(doc(db, "posts", id));
+  if (!auth.currentUser) {
+    throw new Error("User is not signed in.");
+  }
+
+  return getDoc(doc(db, "posts", id)).then((docSnap) => {
+    if (!docSnap.exists()) {
+      throw new Error("Post not found");
+    }
+
+    const post = docSnap.data() as TPost;
+    if (post.userId !== auth.currentUser!.uid) {
+      throw new Error("You don't have permission to delete this post");
+    }
+
+    return deleteDoc(doc(db, "posts", id));
+  });
 };

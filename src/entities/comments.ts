@@ -4,6 +4,8 @@ import {
   doc,
   serverTimestamp,
   setDoc,
+  getDoc,
+  deleteDoc,
 } from "@firebase/firestore";
 import { db, auth } from "../main";
 
@@ -35,16 +37,50 @@ export const updateComment = (
   commentId: string,
   { content }: { content: string }
 ) => {
-  return setDoc(
-    doc(db, `posts/${postId}/comments`, commentId),
-    {
-      content,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
+  if (!auth.currentUser) {
+    throw new Error("User is not signed in.");
+  }
+
+  return getDoc(doc(db, `posts/${postId}/comments`, commentId)).then(
+    (docSnap) => {
+      if (!docSnap.exists()) {
+        throw new Error("Comment not found");
+      }
+
+      const comment = docSnap.data();
+      if (comment.userId !== auth.currentUser!.uid) {
+        throw new Error("You don't have permission to edit this comment");
+      }
+
+      return setDoc(
+        doc(db, `posts/${postId}/comments`, commentId),
+        {
+          content,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    }
   );
 };
 
-// export const deletePost = (id: string) => {
-//   return deleteDoc(doc(db, "posts", id));
-// };
+export const deleteComment = (postId: string, commentId: string) => {
+  if (!auth.currentUser) {
+    throw new Error("User is not signed in.");
+  }
+
+  return getDoc(doc(db, `posts/${postId}/comments`, commentId)).then(
+    (docSnap) => {
+      if (!docSnap.exists()) {
+        throw new Error("Comment not found");
+      }
+
+      const comment = docSnap.data();
+      if (comment.userId !== auth.currentUser!.uid) {
+        throw new Error("You don't have permission to delete this comment");
+      }
+
+      return deleteDoc(doc(db, `posts/${postId}/comments`, commentId));
+    }
+  );
+};
