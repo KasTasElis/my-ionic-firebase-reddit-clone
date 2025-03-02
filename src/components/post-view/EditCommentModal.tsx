@@ -11,7 +11,7 @@ import {
 import { RefObject } from "react";
 import { CommentForm } from "../CommentForm";
 import { TComment } from "../../types";
-import { updateComment } from "../../entities";
+import { deleteComment, deletePost, updateComment } from "../../entities";
 
 interface EditCommentModalProps {
   modalRef: RefObject<HTMLIonModalElement>;
@@ -50,6 +50,26 @@ export const EditCommentModal: React.FC<EditCommentModalProps> = ({
     }
   };
 
+  const onDeleteComment = async () => {
+    try {
+      await deleteComment(postId, comment!.id);
+
+      present({
+        message: "comment deleted successfully",
+        duration: 1500,
+        color: "success",
+      });
+      modalRef.current?.dismiss();
+    } catch (error) {
+      present({
+        message:
+          error instanceof Error ? error.message : "Failed to delete comment",
+        duration: 1500,
+        color: "danger",
+      });
+    }
+  };
+
   return (
     <IonModal ref={modalRef}>
       <IonHeader>
@@ -71,6 +91,14 @@ export const EditCommentModal: React.FC<EditCommentModalProps> = ({
           buttonText="Post Changes"
           content={comment?.content || ""}
         />
+        <IonButton
+          expand="block"
+          color="danger"
+          onClick={onDeleteComment}
+          style={{ marginTop: "1rem" }}
+        >
+          🗑️ Delete Comment
+        </IonButton>
       </IonContent>
     </IonModal>
   );
